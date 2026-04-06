@@ -1,12 +1,7 @@
-import { useState } from 'react';
 import * as Label from '@radix-ui/react-label';
 import { Select } from '../ui/Select/Select';
+import { DateInput } from '../ui/DateInput/DateInput';
 import { useMedRec } from '../../context/MedRecContext';
-import {
-  isoToEuropean,
-  europeanToIso,
-  isValidEuropeanDate,
-} from '../../lib/utils';
 import type { FieldErrors } from '../../pages/AnimalPage';
 import './AnimalForm.css';
 
@@ -35,9 +30,6 @@ export function AnimalForm({
   onClearError,
 }: AnimalFormProps) {
   const { animal, updateAnimal } = useMedRec();
-  const [dateDisplay, setDateDisplay] = useState(() =>
-    animal ? isoToEuropean(animal.dateOfBirth) : '',
-  );
 
   if (!animal) return null;
 
@@ -133,45 +125,14 @@ export function AnimalForm({
             <Label.Root className="animal-form-label" htmlFor="dateOfBirth">
               Date of Birth
             </Label.Root>
-            <input
+            <DateInput
               id="dateOfBirth"
-              className={fieldClass('dateOfBirth')}
-              type="text"
-              value={dateDisplay}
-              onChange={e => {
-                let value = e.target.value;
-
-                // Auto-insert slashes as the user types digits
-                const digitsOnly = value.replace(/\D/g, '');
-                if (digitsOnly.length <= 8) {
-                  const parts: string[] = [];
-                  if (digitsOnly.length > 0) parts.push(digitsOnly.slice(0, 2));
-                  if (digitsOnly.length > 2) parts.push(digitsOnly.slice(2, 4));
-                  if (digitsOnly.length > 4) parts.push(digitsOnly.slice(4, 8));
-                  value = parts.join('/');
-                }
-
-                setDateDisplay(value);
+              value={animal.dateOfBirth}
+              onChange={iso => {
+                updateAnimal({ dateOfBirth: iso });
                 onClearError?.('dateOfBirth');
-
-                // Only update the animal state when we have a complete valid date
-                if (isValidEuropeanDate(value)) {
-                  updateAnimal({ dateOfBirth: europeanToIso(value) });
-                } else if (value === '') {
-                  updateAnimal({ dateOfBirth: '' });
-                }
               }}
-              onBlur={() => {
-                // On blur, if the value is a complete valid date, normalize it
-                if (isValidEuropeanDate(dateDisplay)) {
-                  const iso = europeanToIso(dateDisplay);
-                  updateAnimal({ dateOfBirth: iso });
-                } else if (dateDisplay === '') {
-                  updateAnimal({ dateOfBirth: '' });
-                }
-              }}
-              placeholder="dd/mm/yyyy"
-              maxLength={10}
+              hasError={!!errorFor('dateOfBirth')}
             />
             {errorFor('dateOfBirth') && (
               <span className="animal-form-error">

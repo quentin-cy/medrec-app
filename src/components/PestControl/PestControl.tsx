@@ -1,12 +1,8 @@
 import { useState } from 'react';
 import { useMedRec } from '../../context/MedRecContext';
 import { Select } from '../ui/Select/Select';
-import {
-  generateId,
-  europeanToIso,
-  isoToEuropean,
-  isValidEuropeanDate,
-} from '../../lib/utils';
+import { DateInput } from '../ui/DateInput/DateInput';
+import { generateId, isoToEuropean } from '../../lib/utils';
 import type { PestControl as PestControlEntry } from '../../types/schema';
 import './PestControl.css';
 
@@ -35,21 +31,8 @@ export function PestControl() {
     b.date.localeCompare(a.date),
   );
 
-  const handleDateChange = (value: string) => {
-    const digitsOnly = value.replace(/\D/g, '');
-    if (digitsOnly.length <= 8) {
-      const parts: string[] = [];
-      if (digitsOnly.length > 0) parts.push(digitsOnly.slice(0, 2));
-      if (digitsOnly.length > 2) parts.push(digitsOnly.slice(2, 4));
-      if (digitsOnly.length > 4) parts.push(digitsOnly.slice(4, 8));
-      value = parts.join('/');
-    }
-    setDateInput(value);
-    setFormError('');
-  };
-
   const handleAdd = () => {
-    if (!isValidEuropeanDate(dateInput)) {
+    if (!dateInput) {
       setFormError('Enter a valid date (dd/mm/yyyy)');
       return;
     }
@@ -66,7 +49,7 @@ export function PestControl() {
 
     const entry: PestControlEntry = {
       id: generateId(),
-      date: europeanToIso(dateInput),
+      date: dateInput,
       type: Number(typeInput) as 0 | 1,
       reference: referenceInput.trim(),
       comment: commentInput.trim(),
@@ -109,13 +92,12 @@ export function PestControl() {
 
       {showForm && (
         <div className="pest-control-form">
-          <input
-            className="pest-control-form-input"
-            type="text"
-            placeholder="dd/mm/yyyy"
+          <DateInput
             value={dateInput}
-            onChange={e => handleDateChange(e.target.value)}
-            maxLength={10}
+            onChange={iso => {
+              setDateInput(iso);
+              setFormError('');
+            }}
           />
           <div className="pest-control-form-select">
             <Select
