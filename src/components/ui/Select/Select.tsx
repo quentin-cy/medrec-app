@@ -1,5 +1,5 @@
 import * as SelectPrimitive from '@radix-ui/react-select';
-import styles from './Select.module.css';
+import './Select.css';
 
 interface SelectOption {
   value: string;
@@ -24,39 +24,37 @@ export function Select({
   hasError = false,
 }: SelectProps) {
   const triggerClass = hasError
-    ? `${styles.trigger} ${styles.triggerError}`
-    : styles.trigger;
+    ? 'select-trigger select-trigger-error'
+    : 'select-trigger';
 
   return (
-    <div className={styles.wrapper}>
-      {label && <label className={styles.label}>{label}</label>}
+    <div className="select-wrapper">
+      {label && <label className="select-label">{label}</label>}
       <SelectPrimitive.Root value={value} onValueChange={onValueChange}>
         <SelectPrimitive.Trigger className={triggerClass}>
           <SelectPrimitive.Value placeholder={placeholder} />
-          <SelectPrimitive.Icon className={styles.icon}>
+          <SelectPrimitive.Icon className="select-icon">
             <ChevronDownIcon />
           </SelectPrimitive.Icon>
         </SelectPrimitive.Trigger>
 
         <SelectPrimitive.Portal>
           <SelectPrimitive.Content
-            className={styles.content}
+            className="select-content"
             position="popper"
             sideOffset={4}
           >
-            <SelectPrimitive.Viewport className={styles.viewport}>
+            <SelectPrimitive.Viewport className="select-viewport">
               {options.map(option => (
                 <SelectPrimitive.Item
                   key={option.value}
                   value={option.value}
-                  className={styles.item}
+                  className="select-item"
                 >
                   <SelectPrimitive.ItemText>
                     {option.label}
                   </SelectPrimitive.ItemText>
-                  <SelectPrimitive.ItemIndicator
-                    className={styles.itemIndicator}
-                  >
+                  <SelectPrimitive.ItemIndicator className="select-item-indicator">
                     <CheckIcon />
                   </SelectPrimitive.ItemIndicator>
                 </SelectPrimitive.Item>

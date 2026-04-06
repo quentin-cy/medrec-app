@@ -1,27 +1,27 @@
-.page {
+.home-page {
   display: flex;
   flex-direction: column;
   gap: var(--space-xl);
 }
 
-.hero {
+.home-page-hero {
   text-align: center;
   padding: var(--space-xl) 0;
 }
 
-.title {
+.home-page-title {
   font-size: var(--font-size-2xl);
   font-weight: 700;
   color: var(--color-text);
   margin-bottom: var(--space-sm);
 }
 
-.subtitle {
+.home-page-subtitle {
   font-size: var(--font-size-lg);
   color: var(--color-text-muted);
 }
 
-.actions {
+.home-page-actions {
   display: flex;
   flex-direction: column;
   gap: var(--space-xl);
@@ -30,44 +30,44 @@
   width: 100%;
 }
 
-.card {
+.home-page-card {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
 }
 
-.cardTitle {
+.home-page-card-title {
   font-size: var(--font-size-xl);
   font-weight: 600;
 }
 
-.cardDescription {
+.home-page-card-description {
   color: var(--color-text-muted);
   font-size: var(--font-size-md);
 }
 
-.divider {
+.home-page-divider {
   display: flex;
   align-items: center;
   gap: var(--space-md);
 }
 
-.divider::before,
-.divider::after {
+.home-page-divider::before,
+.home-page-divider::after {
   content: '';
   flex: 1;
   height: 1px;
   background: var(--color-border);
 }
 
-.dividerText {
+.home-page-divider-text {
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
-.newButton {
+.home-page-new-button {
   padding: var(--space-md) var(--space-lg);
   background: var(--color-primary);
   color: var(--color-primary-text);
@@ -79,6 +79,6 @@
   align-self: flex-start;
 }
 
-.newButton:hover {
+.home-page-new-button:hover {
   background: var(--color-primary-hover);
 }

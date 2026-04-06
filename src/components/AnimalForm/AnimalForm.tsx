@@ -8,7 +8,7 @@ import {
   isValidEuropeanDate,
 } from '../../lib/utils';
 import type { FieldErrors } from '../../pages/AnimalPage';
-import styles from './AnimalForm.module.css';
+import './AnimalForm.css';
 
 const SPECIES_OPTIONS = [
   { value: 'dog', label: 'Dog' },
@@ -61,15 +61,17 @@ export function AnimalForm({
 
   const errorFor = (field: string) => fieldErrors[field];
   const fieldClass = (field: string) =>
-    errorFor(field) ? `${styles.input} ${styles.inputError}` : styles.input;
+    errorFor(field)
+      ? 'animal-form-input animal-form-input-error'
+      : 'animal-form-input';
 
   return (
-    <form className={styles.form} onSubmit={e => e.preventDefault()}>
-      <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Basic Information</h3>
-        <div className={styles.grid}>
-          <div className={styles.field}>
-            <Label.Root className={styles.label} htmlFor="name">
+    <form className="animal-form" onSubmit={e => e.preventDefault()}>
+      <div className="animal-form-section">
+        <h3 className="animal-form-section-title">Basic Information</h3>
+        <div className="animal-form-grid">
+          <div className="animal-form-field">
+            <Label.Root className="animal-form-label" htmlFor="name">
               Name
             </Label.Root>
             <input
@@ -81,12 +83,12 @@ export function AnimalForm({
               placeholder="Animal name"
             />
             {errorFor('name') && (
-              <span className={styles.error}>{errorFor('name')}</span>
+              <span className="animal-form-error">{errorFor('name')}</span>
             )}
           </div>
 
-          <div className={styles.field}>
-            <Label.Root className={styles.label} htmlFor="species">
+          <div className="animal-form-field">
+            <Label.Root className="animal-form-label" htmlFor="species">
               Species
             </Label.Root>
             <Select
@@ -97,12 +99,12 @@ export function AnimalForm({
               hasError={!!errorFor('species')}
             />
             {errorFor('species') && (
-              <span className={styles.error}>{errorFor('species')}</span>
+              <span className="animal-form-error">{errorFor('species')}</span>
             )}
           </div>
 
-          <div className={styles.field}>
-            <Label.Root className={styles.label} htmlFor="breed">
+          <div className="animal-form-field">
+            <Label.Root className="animal-form-label" htmlFor="breed">
               Breed
             </Label.Root>
             <input
@@ -114,12 +116,12 @@ export function AnimalForm({
               placeholder="Breed"
             />
             {errorFor('breed') && (
-              <span className={styles.error}>{errorFor('breed')}</span>
+              <span className="animal-form-error">{errorFor('breed')}</span>
             )}
           </div>
 
-          <div className={styles.field}>
-            <Label.Root className={styles.label} htmlFor="sex">
+          <div className="animal-form-field">
+            <Label.Root className="animal-form-label" htmlFor="sex">
               Sex
             </Label.Root>
             <Select
@@ -130,12 +132,12 @@ export function AnimalForm({
               hasError={!!errorFor('sex')}
             />
             {errorFor('sex') && (
-              <span className={styles.error}>{errorFor('sex')}</span>
+              <span className="animal-form-error">{errorFor('sex')}</span>
             )}
           </div>
 
-          <div className={styles.field}>
-            <Label.Root className={styles.label} htmlFor="dateOfBirth">
+          <div className="animal-form-field">
+            <Label.Root className="animal-form-label" htmlFor="dateOfBirth">
               Date of Birth
             </Label.Root>
             <input
@@ -179,12 +181,14 @@ export function AnimalForm({
               maxLength={10}
             />
             {errorFor('dateOfBirth') && (
-              <span className={styles.error}>{errorFor('dateOfBirth')}</span>
+              <span className="animal-form-error">
+                {errorFor('dateOfBirth')}
+              </span>
             )}
           </div>
 
-          <div className={styles.field}>
-            <Label.Root className={styles.label} htmlFor="weight">
+          <div className="animal-form-field">
+            <Label.Root className="animal-form-label" htmlFor="weight">
               Weight (kg)
             </Label.Root>
             <input
@@ -198,12 +202,12 @@ export function AnimalForm({
               placeholder="0.0"
             />
             {errorFor('weight') && (
-              <span className={styles.error}>{errorFor('weight')}</span>
+              <span className="animal-form-error">{errorFor('weight')}</span>
             )}
           </div>
 
-          <div className={styles.field}>
-            <Label.Root className={styles.label} htmlFor="microchipId">
+          <div className="animal-form-field">
+            <Label.Root className="animal-form-label" htmlFor="microchipId">
               Microchip ID
             </Label.Root>
             <input
@@ -218,17 +222,19 @@ export function AnimalForm({
               placeholder="Optional"
             />
             {errorFor('microchipId') && (
-              <span className={styles.error}>{errorFor('microchipId')}</span>
+              <span className="animal-form-error">
+                {errorFor('microchipId')}
+              </span>
             )}
           </div>
         </div>
       </div>
 
-      <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Owner Information</h3>
-        <div className={styles.grid}>
-          <div className={styles.field}>
-            <Label.Root className={styles.label} htmlFor="ownerName">
+      <div className="animal-form-section">
+        <h3 className="animal-form-section-title">Owner Information</h3>
+        <div className="animal-form-grid">
+          <div className="animal-form-field">
+            <Label.Root className="animal-form-label" htmlFor="ownerName">
               Owner Name
             </Label.Root>
             <input
@@ -240,12 +246,12 @@ export function AnimalForm({
               placeholder="Owner name"
             />
             {errorFor('ownerName') && (
-              <span className={styles.error}>{errorFor('ownerName')}</span>
+              <span className="animal-form-error">{errorFor('ownerName')}</span>
             )}
           </div>
 
-          <div className={styles.field}>
-            <Label.Root className={styles.label} htmlFor="ownerPhone">
+          <div className="animal-form-field">
+            <Label.Root className="animal-form-label" htmlFor="ownerPhone">
               Owner Phone
             </Label.Root>
             <input
@@ -257,7 +263,9 @@ export function AnimalForm({
               placeholder="Phone number"
             />
             {errorFor('ownerPhone') && (
-              <span className={styles.error}>{errorFor('ownerPhone')}</span>
+              <span className="animal-form-error">
+                {errorFor('ownerPhone')}
+              </span>
             )}
           </div>
         </div>

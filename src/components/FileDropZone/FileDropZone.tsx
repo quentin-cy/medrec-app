@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import styles from './FileDropZone.module.css';
+import './FileDropZone.css';
 
 interface FileDropZoneProps {
   onFileSelected: (file: File) => void;
@@ -41,7 +41,7 @@ export function FileDropZone({ onFileSelected }: FileDropZoneProps) {
 
   return (
     <div
-      className={`${styles.dropZone} ${isDragging ? styles.dragging : ''}`}
+      className={`drop-zone ${isDragging ? 'drop-zone-dragging' : ''}`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -59,17 +59,17 @@ export function FileDropZone({ onFileSelected }: FileDropZoneProps) {
         ref={inputRef}
         type="file"
         accept=".json"
-        className={styles.input}
+        className="drop-zone-input"
         onChange={handleChange}
       />
-      <div className={styles.content}>
-        <div className={styles.icon}>
+      <div className="drop-zone-content">
+        <div className="drop-zone-icon">
           <UploadIcon />
         </div>
-        <p className={styles.text}>
+        <p className="drop-zone-text">
           <strong>Drop a JSON file here</strong> or click to browse
         </p>
-        <p className={styles.hint}>Accepts .json medical record files</p>
+        <p className="drop-zone-hint">Accepts .json medical record files</p>
       </div>
     </div>
   );

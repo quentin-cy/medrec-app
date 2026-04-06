@@ -6,7 +6,7 @@ import {
   type ReactNode,
 } from 'react';
 import * as ToastPrimitive from '@radix-ui/react-toast';
-import styles from './Toast.module.css';
+import './Toast.css';
 
 type ToastVariant = 'success' | 'error' | 'info';
 
@@ -26,6 +26,12 @@ interface ToastContextValue {
 const ToastContext = createContext<ToastContextValue | undefined>(undefined);
 
 let toastId = 0;
+
+const VARIANT_CLASSES: Record<ToastVariant, string> = {
+  success: 'toast-success',
+  error: 'toast-error',
+  info: 'toast-info',
+};
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
@@ -55,25 +61,25 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map(t => (
           <ToastPrimitive.Root
             key={t.id}
-            className={`${styles.root} ${styles[t.variant]}`}
+            className={`toast-root ${VARIANT_CLASSES[t.variant]}`}
             onOpenChange={open => {
               if (!open) removeToast(t.id);
             }}
           >
-            <ToastPrimitive.Title className={styles.title}>
+            <ToastPrimitive.Title className="toast-title">
               {t.title}
             </ToastPrimitive.Title>
             {t.description && (
-              <ToastPrimitive.Description className={styles.description}>
+              <ToastPrimitive.Description className="toast-description">
                 {t.description}
               </ToastPrimitive.Description>
             )}
-            <ToastPrimitive.Close className={styles.close}>
+            <ToastPrimitive.Close className="toast-close">
               &times;
             </ToastPrimitive.Close>
           </ToastPrimitive.Root>
         ))}
-        <ToastPrimitive.Viewport className={styles.viewport} />
+        <ToastPrimitive.Viewport className="toast-viewport" />
       </ToastPrimitive.Provider>
     </ToastContext.Provider>
   );
