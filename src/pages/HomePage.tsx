@@ -3,7 +3,7 @@ import { FileDropZone } from '../components/FileDropZone/FileDropZone';
 import { useMedRec } from '../context/MedRecContext';
 import { useFileImport } from '../hooks/useFileImport';
 import { useToast } from '../components/ui/Toast/Toast';
-import { createBlankReccord } from '../lib/utils';
+import { createBlankRecord } from '../lib/utils';
 import './HomePage.css';
 
 export function HomePage() {
@@ -26,7 +26,7 @@ export function HomePage() {
   };
 
   const handleNewAnimal = () => {
-    setAnimal(createBlankReccord());
+    setAnimal(createBlankRecord());
     navigate('/animal');
   };
 

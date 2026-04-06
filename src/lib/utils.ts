@@ -5,7 +5,7 @@ export function generateId(): string {
   return uuidv4();
 }
 
-export function createBlankReccord(): AnimalRecord {
+export function createBlankRecord(): AnimalRecord {
   return {
     id: generateId(),
     name: '',

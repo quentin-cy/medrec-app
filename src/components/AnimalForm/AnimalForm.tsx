@@ -43,13 +43,7 @@ export function AnimalForm({
 
   const handleChange =
     (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value =
-        field === 'weight'
-          ? e.target.value === ''
-            ? null
-            : Number(e.target.value)
-          : e.target.value;
-      updateAnimal({ [field]: value });
+      updateAnimal({ [field]: e.target.value });
       onClearError?.(field);
     };
 

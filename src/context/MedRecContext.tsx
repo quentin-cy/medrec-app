@@ -5,12 +5,12 @@ import {
   useCallback,
   type ReactNode,
 } from 'react';
-import type { Animal } from '../types/schema';
+import type { AnimalRecord } from '../types/schema';
 
 interface MedRecContextValue {
-  animal: Animal | null;
-  setAnimal: (animal: Animal | null) => void;
-  updateAnimal: (updates: Partial<Animal>) => void;
+  animal: AnimalRecord | null;
+  setAnimal: (animal: AnimalRecord | null) => void;
+  updateAnimal: (updates: Partial<AnimalRecord>) => void;
   hasUnsavedChanges: boolean;
   setHasUnsavedChanges: (value: boolean) => void;
 }
@@ -18,15 +18,15 @@ interface MedRecContextValue {
 const MedRecContext = createContext<MedRecContextValue | undefined>(undefined);
 
 export function MedRecProvider({ children }: { children: ReactNode }) {
-  const [animal, setAnimalState] = useState<Animal | null>(null);
+  const [animal, setAnimalState] = useState<AnimalRecord | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  const setAnimal = useCallback((animal: Animal | null) => {
+  const setAnimal = useCallback((animal: AnimalRecord | null) => {
     setAnimalState(animal);
     setHasUnsavedChanges(false);
   }, []);
 
-  const updateAnimal = useCallback((updates: Partial<Animal>) => {
+  const updateAnimal = useCallback((updates: Partial<AnimalRecord>) => {
     setAnimalState(prev => {
       if (!prev) return prev;
       return { ...prev, ...updates };

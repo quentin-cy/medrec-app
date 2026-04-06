@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { AnimalForm } from '../components/AnimalForm/AnimalForm';
+import { WeightHistory } from '../components/WeightHistory/WeightHistory';
 import { useMedRec } from '../context/MedRecContext';
 import { useToast } from '../components/ui/Toast/Toast';
 import { AnimalRecordSchema } from '../types/schema';
@@ -91,6 +92,7 @@ export function AnimalPage() {
           })
         }
       />
+      <WeightHistory />
     </div>
   );
 }
