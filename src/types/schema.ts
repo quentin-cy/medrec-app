@@ -11,6 +11,21 @@ export const WeighingSchema = z.object({
 
 export type Weighing = z.infer<typeof WeighingSchema>;
 
+const PestControlTypeEnum = {
+  Dewormer: 0,
+  FleaProtection: 1,
+} as const;
+
+export const PestControlSchema = z.object({
+  id: z.uuid(),
+  date: z.iso.date().min(1, 'Date is required'),
+  type: z.enum(PestControlTypeEnum, 'Invalid pest control type'),
+  reference: z.string().min(1, 'Reference is required'),
+  comment: z.string().default(''),
+});
+
+export type PestControl = z.infer<typeof PestControlSchema>;
+
 export const AnimalRecordSchema = z.object({
   id: z.uuid(),
   name: z.string().min(1, 'Name is required'),
@@ -19,6 +34,7 @@ export const AnimalRecordSchema = z.object({
   dateOfBirth: z.string().default(''),
   sex: SexEnum.default('unknown'),
   weight_history: z.array(WeighingSchema).default([]),
+  pest_control_history: z.array(PestControlSchema).default([]),
   microchipId: z.string().nullable().default(null),
 });
 
