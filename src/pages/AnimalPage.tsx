@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { AnimalForm } from '../components/AnimalForm/AnimalForm';
 import { useMedRec } from '../context/MedRecContext';
 import { useToast } from '../components/ui/Toast/Toast';
-import { AnimalSchema } from '../types/schema';
+import { AnimalRecordSchema } from '../types/schema';
 import { useEffect, useState, useCallback } from 'react';
 import './AnimalPage.css';
 import { useFileExport } from '../hooks/useFileExport';
@@ -34,7 +34,7 @@ export function AnimalPage() {
   const handleValidate = useCallback(() => {
     if (!animal) return;
 
-    const result = AnimalSchema.safeParse(animal);
+    const result = AnimalRecordSchema.safeParse(animal);
 
     if (result.success) {
       setFieldErrors({});
@@ -67,16 +67,18 @@ export function AnimalPage() {
             <span className="animal-page-badge">{animal.species}</span>
           )}
         </div>
-        <button className="animal-page-validate-btn" onClick={handleValidate}>
-          <CheckIcon />
-          Validate
-        </button>
-        <div className="animal-page-actions">
-          {canExport && (
-            <button className="animal-page-export-btn" onClick={handleExport}>
-              Export Record
-            </button>
-          )}
+        <div className="animal-page-header-right">
+          <button className="animal-page-validate-btn" onClick={handleValidate}>
+            <CheckIcon />
+            Validate
+          </button>
+          <div className="animal-page-actions">
+            {canExport && (
+              <button className="animal-page-export-btn" onClick={handleExport}>
+                Export Record
+              </button>
+            )}
+          </div>
         </div>
       </div>
       <AnimalForm

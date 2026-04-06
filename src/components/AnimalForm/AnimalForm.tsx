@@ -17,7 +17,6 @@ const SPECIES_OPTIONS = [
   { value: 'rabbit', label: 'Rabbit' },
   { value: 'bird', label: 'Bird' },
   { value: 'reptile', label: 'Reptile' },
-  { value: 'other', label: 'Other' },
 ];
 
 const SEX_OPTIONS = [
@@ -188,25 +187,6 @@ export function AnimalForm({
           </div>
 
           <div className="animal-form-field">
-            <Label.Root className="animal-form-label" htmlFor="weight">
-              Weight (kg)
-            </Label.Root>
-            <input
-              id="weight"
-              className={fieldClass('weight')}
-              type="number"
-              step="0.1"
-              min="0"
-              value={animal.weight ?? ''}
-              onChange={handleChange('weight')}
-              placeholder="0.0"
-            />
-            {errorFor('weight') && (
-              <span className="animal-form-error">{errorFor('weight')}</span>
-            )}
-          </div>
-
-          <div className="animal-form-field">
             <Label.Root className="animal-form-label" htmlFor="microchipId">
               Microchip ID
             </Label.Root>
@@ -224,47 +204,6 @@ export function AnimalForm({
             {errorFor('microchipId') && (
               <span className="animal-form-error">
                 {errorFor('microchipId')}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="animal-form-section">
-        <h3 className="animal-form-section-title">Owner Information</h3>
-        <div className="animal-form-grid">
-          <div className="animal-form-field">
-            <Label.Root className="animal-form-label" htmlFor="ownerName">
-              Owner Name
-            </Label.Root>
-            <input
-              id="ownerName"
-              className={fieldClass('ownerName')}
-              type="text"
-              value={animal.ownerName}
-              onChange={handleChange('ownerName')}
-              placeholder="Owner name"
-            />
-            {errorFor('ownerName') && (
-              <span className="animal-form-error">{errorFor('ownerName')}</span>
-            )}
-          </div>
-
-          <div className="animal-form-field">
-            <Label.Root className="animal-form-label" htmlFor="ownerPhone">
-              Owner Phone
-            </Label.Root>
-            <input
-              id="ownerPhone"
-              className={fieldClass('ownerPhone')}
-              type="tel"
-              value={animal.ownerPhone}
-              onChange={handleChange('ownerPhone')}
-              placeholder="Phone number"
-            />
-            {errorFor('ownerPhone') && (
-              <span className="animal-form-error">
-                {errorFor('ownerPhone')}
               </span>
             )}
           </div>

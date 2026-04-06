@@ -24,7 +24,7 @@ export function Layout({ children }: LayoutProps) {
                   `layout-nav-link ${isActive ? 'layout-nav-link-active' : ''}`
                 }
               >
-                {animal.name}
+                {animal.name ? animal.name : 'New Animal'}
               </NavLink>
             )}
           </nav>

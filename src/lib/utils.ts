@@ -1,11 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { Animal } from '../types/schema';
+import type { AnimalRecord } from '../types/schema';
 
 export function generateId(): string {
   return uuidv4();
 }
 
-export function createBlankAnimal(): Animal {
+export function createBlankReccord(): AnimalRecord {
   return {
     id: generateId(),
     name: '',
@@ -13,10 +13,8 @@ export function createBlankAnimal(): Animal {
     breed: '',
     dateOfBirth: '',
     sex: 'unknown',
-    weight: null,
+    weight_history: [],
     microchipId: null,
-    ownerName: '',
-    ownerPhone: '',
   };
 }
 
