@@ -5,8 +5,12 @@ import { DateInput } from '../../common/DateInput/DateInput.tsx';
 import { generateId } from '../../../utils/utils.ts';
 import type { Vaccination as VaccinationEntry } from '../../../types/schema.ts';
 import './Vaccination.css';
-import { DeleteIcon } from '../../common/icons/icons.tsx';
+import { DeleteIcon, PlusIcon } from '../../common/icons/icons.tsx';
 import { isoToEuropean } from '../../../utils/formatting.ts';
+import { SmallIconButton } from '../../common/IconButton/IconButton.tsx';
+import { FormSection } from '../../FormSection/FormSection.tsx';
+import { TextField } from '../../common/TextField/TextField.tsx';
+
 
 export function Vaccination() {
   const { medicalRecord, updateMedicalRecord, medicalContext } = useContext(MedRecContext);
@@ -108,20 +112,15 @@ export function Vaccination() {
   };
 
   return (
-    <div className="vaccination">
-      <div className="vaccination-header">
-        <h3 className="vaccination-title">Vaccinations</h3>
-        <button
-          className="vaccination-add-btn"
-          onClick={() => {
+    <FormSection
+      title="Vaccination"
+      button={
+        <SmallIconButton icon={<PlusIcon/>} text="Add Entry"  callback={() => {
             setShowForm(!showForm);
             setFormError('');
-          }}
-        >
-          {showForm ? 'Cancel' : '+ Add Entry'}
-        </button>
-      </div>
-
+          }}/>
+      }
+    >
       {showForm && (
         <div className="vaccination-form">
           <DateInput
@@ -142,16 +141,16 @@ export function Vaccination() {
               placeholder="Type"
             />
           </div>
-          <input
-            className="vaccination-form-input vaccination-form-input-ref"
-            type="text"
-            placeholder="Vaccine / reference"
+          <TextField
+            id="reference"
             value={referenceInput}
+            placeholder="Reference"
             onChange={e => {
               setReferenceInput(e.target.value);
               setFormError('');
             }}
-          />
+          ></TextField>
+
           <div className="vaccination-form-select">
             <Select
               value={vetInput}
@@ -208,6 +207,6 @@ export function Vaccination() {
           </tbody>
         </table>
       )}
-    </div>
+    </FormSection>
   );
 }

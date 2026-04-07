@@ -1,0 +1,23 @@
+.form-section-title {
+    font-weight: 500;
+}
+
+.form-section {
+    background-color: var(--color-surface);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-md);
+    border-color: var(--color-border);
+    border-width: 1px;
+    border-style: solid;
+}
+
+.form-section-header {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom-style: solid;
+    border-width: 1px;
+    border-color: var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

@@ -4,11 +4,11 @@ import { GearIcon } from '../common/icons/icons.tsx';
 import { useContext } from 'react';
 import { MedRecContext } from '../../context/MedRecContext.tsx';
 
-interface LayoutProps {
+interface NavigationProps {
   children: React.ReactNode;
 }
 
-export function Navigation({ children }: LayoutProps) {
+export function Navigation({ children }: NavigationProps) {
   const { medicalRecord } = useContext(MedRecContext);
 
   return (

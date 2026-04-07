@@ -44,32 +44,6 @@
   flex-wrap: wrap;
 }
 
-.vaccination-form-input {
-  padding: var(--space-sm) var(--space-md);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-md);
-  color: var(--color-text);
-  background: var(--color-surface);
-  height: 40px;
-  width: 130px;
-  transition: border-color var(--transition-fast);
-}
-
-.vaccination-form-input:focus {
-  outline: 2px solid var(--color-border-focus);
-  outline-offset: -1px;
-  border-color: var(--color-border-focus);
-}
-
-.vaccination-form-select {
-  min-width: 160px;
-}
-
-.vaccination-form-input-ref {
-  width: 180px;
-}
-
 .vaccination-form-confirm {
   padding: var(--space-sm) var(--space-md);
   background: var(--color-success);

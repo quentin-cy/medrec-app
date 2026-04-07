@@ -9,6 +9,8 @@ import './AnimalPage.css';
 import { useFileExport } from '../hooks/useFileExport';
 import { MedRecContext } from '../context/MedRecContext.tsx';
 import { ToastContext } from '../components/common/Toast/ToastContext.tsx';
+import { SaveIcon } from '../components/common/icons/icons.tsx';
+import { IconButton } from '../components/common/IconButton/IconButton.tsx';
 
 export type FieldErrors = Record<string, string>;
 
@@ -76,11 +78,7 @@ export function AnimalPage() {
         </div>
         <div className="animal-page-header-right">
           <div className="animal-page-actions">
-            {canExport && (
-              <button className="animal-page-export-btn" onClick={handleExport}>
-                Export Record
-              </button>
-            )}
+            {canExport && (<IconButton icon={<SaveIcon/>} text="Export Record" callback={handleExport}/>)}
           </div>
         </div>
       </div>

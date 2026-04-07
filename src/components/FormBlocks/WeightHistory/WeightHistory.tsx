@@ -3,9 +3,13 @@ import { DateInput } from '../../common/DateInput/DateInput.tsx';
 import { generateId } from '../../../utils/utils.ts';
 import type { Weighing } from '../../../types/schema.ts';
 import './WeightHistory.css';
-import { DeleteIcon } from '../../common/icons/icons.tsx';
+import { DeleteIcon, PlusIcon } from '../../common/icons/icons.tsx';
 import { isoToEuropean } from '../../../utils/formatting.ts';
 import { MedRecContext } from '../../../context/MedRecContext.tsx';
+import { FormSection } from '../../FormSection/FormSection.tsx';
+import {
+  SmallIconButton,
+} from '../../common/IconButton/IconButton.tsx';
 
 export function WeightHistory() {
   const { medicalRecord, updateMedicalRecord } = useContext(MedRecContext);
@@ -55,20 +59,15 @@ export function WeightHistory() {
   };
 
   return (
-    <div className="weight-history">
-      <div className="weight-history-header">
-        <h3 className="weight-history-title">Weight History</h3>
-        <button
-          className="weight-history-add-btn"
-          onClick={() => {
+    <FormSection
+      title="Weight History"
+      button={
+        <SmallIconButton icon={<PlusIcon/>} text="Add Entry"  callback={() => {
             setShowForm(!showForm);
             setFormError('');
-          }}
-        >
-          {showForm ? 'Cancel' : '+ Add Entry'}
-        </button>
-      </div>
-
+          }}/>
+      }
+    >
       {showForm && (
         <div className="weight-history-form">
           <DateInput
@@ -134,7 +133,7 @@ export function WeightHistory() {
           </table>
         </>
       )}
-    </div>
+    </FormSection>
   );
 }
 
