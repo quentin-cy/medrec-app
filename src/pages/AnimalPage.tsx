@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { AnimalForm } from '../components/AnimalForm/AnimalForm';
 import { WeightHistory } from '../components/WeightHistory/WeightHistory';
 import { PestControl } from '../components/PestControl/PestControl';
+import { Vaccination } from '../components/Vaccination/Vaccination';
 import { useMedRec } from '../context/MedRecContext';
 import { useToast } from '../components/ui/Toast/Toast';
 import { AnimalRecordSchema } from '../types/schema';
@@ -95,6 +96,7 @@ export function AnimalPage() {
       />
       <WeightHistory />
       <PestControl />
+      <Vaccination />
     </div>
   );
 }

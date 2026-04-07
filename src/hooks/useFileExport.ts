@@ -9,7 +9,7 @@ interface UseFileExportReturn {
 }
 
 export function useFileExport(): UseFileExportReturn {
-  const { animal, version, setVersion } = useMedRec();
+  const { animal, version, setVersion, context } = useMedRec();
 
   const exportFile = useCallback(() => {
     if (!animal) return;
@@ -21,6 +21,7 @@ export function useFileExport(): UseFileExportReturn {
         version: newVersion,
         exportedAt: new Date().toISOString(),
       },
+      context,
       animal,
     };
     const basename = animal.name
@@ -30,7 +31,7 @@ export function useFileExport(): UseFileExportReturn {
 
     downloadJson(data, filename);
     setVersion(newVersion);
-  }, [animal, version, setVersion]);
+  }, [animal, version, setVersion, context]);
 
   return {
     exportFile,

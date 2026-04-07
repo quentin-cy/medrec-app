@@ -4,6 +4,7 @@ import { ToastProvider } from './components/ui/Toast/Toast';
 import { Layout } from './components/Layout/Layout';
 import { HomePage } from './pages/HomePage';
 import { AnimalPage } from './pages/AnimalPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/animal" element={<AnimalPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
             </Routes>
           </Layout>
         </ToastProvider>

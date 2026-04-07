@@ -15,6 +15,7 @@ export function createBlankRecord(): AnimalRecord {
     sex: 'unknown',
     weight_history: [],
     pest_control_history: [],
+    vaccination_history: [],
     microchipId: null,
   };
 }

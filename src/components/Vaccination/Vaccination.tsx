@@ -3,38 +3,56 @@ import { useMedRec } from '../../context/MedRecContext';
 import { Select } from '../ui/Select/Select';
 import { DateInput } from '../ui/DateInput/DateInput';
 import { generateId, isoToEuropean } from '../../lib/utils';
-import type { PestControl as PestControlEntry } from '../../types/schema';
-import './PestControl.css';
+import type { Vaccination as VaccinationEntry } from '../../types/schema';
+import './Vaccination.css';
 
-export function PestControl() {
+export function Vaccination() {
   const { animal, updateAnimal, context } = useMedRec();
   const [showForm, setShowForm] = useState(false);
   const [dateInput, setDateInput] = useState('');
   const [typeInput, setTypeInput] = useState('');
   const [referenceInput, setReferenceInput] = useState('');
-  const [commentInput, setCommentInput] = useState('');
+  const [vetInput, setVetInput] = useState('');
   const [formError, setFormError] = useState('');
 
   if (!animal) return null;
 
   const typeOptions = useMemo(
     () =>
-      context.pest_control_types.map(t => ({
+      context.vaccination_types.map(t => ({
         value: String(t.value),
         label: t.label,
       })),
-    [context.pest_control_types],
+    [context.vaccination_types],
   );
 
   const typeLabels = useMemo(
     () =>
       Object.fromEntries(
-        context.pest_control_types.map(t => [t.value, t.label]),
+        context.vaccination_types.map(t => [t.value, t.label]),
       ) as Record<number, string>,
-    [context.pest_control_types],
+    [context.vaccination_types],
   );
 
-  const entries = [...animal.pest_control_history].sort((a, b) =>
+  const vetOptions = useMemo(
+    () =>
+      context.vets.map(v => ({
+        value: String(v.value),
+        label: v.label,
+      })),
+    [context.vets],
+  );
+
+  const vetLabels = useMemo(
+    () =>
+      Object.fromEntries(context.vets.map(v => [v.value, v.label])) as Record<
+        number,
+        string
+      >,
+    [context.vets],
+  );
+
+  const entries = [...animal.vaccination_history].sort((a, b) =>
     b.date.localeCompare(a.date),
   );
 
@@ -45,49 +63,52 @@ export function PestControl() {
     }
 
     if (typeInput === '') {
-      setFormError('Select a type');
+      setFormError('Select a vaccination type');
       return;
     }
 
     if (!referenceInput.trim()) {
-      setFormError('Enter a reference (product name)');
+      setFormError('Enter a reference (vaccine name)');
       return;
     }
 
-    const entry: PestControlEntry = {
+    if (vetInput === '') {
+      setFormError('Select a vet');
+      return;
+    }
+
+    const entry: VaccinationEntry = {
       id: generateId(),
       date: dateInput,
-      type: Number(typeInput) as 0 | 1,
+      type: Number(typeInput),
       reference: referenceInput.trim(),
-      comment: commentInput.trim(),
+      vet: Number(vetInput),
     };
 
     updateAnimal({
-      pest_control_history: [...animal.pest_control_history, entry],
+      vaccination_history: [...animal.vaccination_history, entry],
     });
 
     setDateInput('');
     setTypeInput('');
     setReferenceInput('');
-    setCommentInput('');
+    setVetInput('');
     setFormError('');
     setShowForm(false);
   };
 
   const handleDelete = (id: string) => {
     updateAnimal({
-      pest_control_history: animal.pest_control_history.filter(
-        e => e.id !== id,
-      ),
+      vaccination_history: animal.vaccination_history.filter(e => e.id !== id),
     });
   };
 
   return (
-    <div className="pest-control">
-      <div className="pest-control-header">
-        <h3 className="pest-control-title">Pest Control</h3>
+    <div className="vaccination">
+      <div className="vaccination-header">
+        <h3 className="vaccination-title">Vaccinations</h3>
         <button
-          className="pest-control-add-btn"
+          className="vaccination-add-btn"
           onClick={() => {
             setShowForm(!showForm);
             setFormError('');
@@ -98,7 +119,7 @@ export function PestControl() {
       </div>
 
       {showForm && (
-        <div className="pest-control-form">
+        <div className="vaccination-form">
           <DateInput
             value={dateInput}
             onChange={iso => {
@@ -106,7 +127,7 @@ export function PestControl() {
               setFormError('');
             }}
           />
-          <div className="pest-control-form-select">
+          <div className="vaccination-form-select">
             <Select
               value={typeInput}
               onValueChange={value => {
@@ -118,43 +139,47 @@ export function PestControl() {
             />
           </div>
           <input
-            className="pest-control-form-input pest-control-form-input-ref"
+            className="vaccination-form-input vaccination-form-input-ref"
             type="text"
-            placeholder="Product / reference"
+            placeholder="Vaccine / reference"
             value={referenceInput}
             onChange={e => {
               setReferenceInput(e.target.value);
               setFormError('');
             }}
           />
-          <input
-            className="pest-control-form-input pest-control-form-input-comment"
-            type="text"
-            placeholder="Comment (optional)"
-            value={commentInput}
-            onChange={e => setCommentInput(e.target.value)}
-          />
-          <button className="pest-control-form-confirm" onClick={handleAdd}>
+          <div className="vaccination-form-select">
+            <Select
+              value={vetInput}
+              onValueChange={value => {
+                setVetInput(value);
+                setFormError('');
+              }}
+              options={vetOptions}
+              placeholder="Vet"
+            />
+          </div>
+          <button className="vaccination-form-confirm" onClick={handleAdd}>
             Add
           </button>
           {formError && (
-            <span className="pest-control-form-error">{formError}</span>
+            <span className="vaccination-form-error">{formError}</span>
           )}
         </div>
       )}
 
       {entries.length === 0 ? (
-        <p className="pest-control-empty">
-          No pest control entries yet. Add one to start tracking.
+        <p className="vaccination-empty">
+          No vaccination entries yet. Add one to start tracking.
         </p>
       ) : (
-        <table className="pest-control-table">
+        <table className="vaccination-table">
           <thead>
             <tr>
               <th>Date</th>
               <th>Type</th>
               <th>Reference</th>
-              <th>Comment</th>
+              <th>Vet</th>
               <th></th>
             </tr>
           </thead>
@@ -164,12 +189,10 @@ export function PestControl() {
                 <td>{isoToEuropean(entry.date)}</td>
                 <td>{typeLabels[entry.type] ?? entry.type}</td>
                 <td>{entry.reference}</td>
-                <td className="pest-control-comment">
-                  {entry.comment || '--'}
-                </td>
+                <td>{vetLabels[entry.vet] ?? entry.vet}</td>
                 <td>
                   <button
-                    className="pest-control-delete-btn"
+                    className="vaccination-delete-btn"
                     onClick={() => handleDelete(entry.id)}
                     title="Delete entry"
                   >
