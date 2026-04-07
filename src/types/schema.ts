@@ -40,7 +40,15 @@ export const AnimalRecordSchema = z.object({
 
 export type AnimalRecord = z.infer<typeof AnimalRecordSchema>;
 
+export const MetadataSchema = z.object({
+  version: z.number().int().nonnegative(),
+  exportedAt: z.string(),
+});
+
+export type Metadata = z.infer<typeof MetadataSchema>;
+
 export const MedRecFileSchema = z.object({
+  metadata: MetadataSchema.default({ version: 0, exportedAt: '' }),
   animal: AnimalRecordSchema,
 });
 

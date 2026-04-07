@@ -7,7 +7,7 @@ import { createBlankRecord } from '../lib/utils';
 import './HomePage.css';
 
 export function HomePage() {
-  const { setAnimal } = useMedRec();
+  const { setAnimal, setVersion } = useMedRec();
   const { importFile } = useFileImport();
   const toast = useToast();
   const navigate = useNavigate();
@@ -16,6 +16,7 @@ export function HomePage() {
     try {
       const data = await importFile(file);
       setAnimal(data.animal);
+      setVersion(data.metadata.version);
       toast.success('Imported', `Loaded record for "${data.animal.name}"`);
       navigate('/animal');
     } catch (err) {

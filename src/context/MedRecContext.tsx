@@ -11,6 +11,8 @@ interface MedRecContextValue {
   animal: AnimalRecord | null;
   setAnimal: (animal: AnimalRecord | null) => void;
   updateAnimal: (updates: Partial<AnimalRecord>) => void;
+  version: number;
+  setVersion: (version: number) => void;
   hasUnsavedChanges: boolean;
   setHasUnsavedChanges: (value: boolean) => void;
 }
@@ -19,10 +21,12 @@ const MedRecContext = createContext<MedRecContextValue | undefined>(undefined);
 
 export function MedRecProvider({ children }: { children: ReactNode }) {
   const [animal, setAnimalState] = useState<AnimalRecord | null>(null);
+  const [version, setVersion] = useState(0);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const setAnimal = useCallback((animal: AnimalRecord | null) => {
     setAnimalState(animal);
+    setVersion(0);
     setHasUnsavedChanges(false);
   }, []);
 
@@ -40,6 +44,8 @@ export function MedRecProvider({ children }: { children: ReactNode }) {
         animal,
         setAnimal,
         updateAnimal,
+        version,
+        setVersion,
         hasUnsavedChanges,
         setHasUnsavedChanges,
       }}

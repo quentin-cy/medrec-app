@@ -9,18 +9,28 @@ interface UseFileExportReturn {
 }
 
 export function useFileExport(): UseFileExportReturn {
-  const { animal } = useMedRec();
+  const { animal, version, setVersion } = useMedRec();
 
   const exportFile = useCallback(() => {
     if (!animal) return;
 
-    const data: MedRecFile = { animal };
-    const filename = animal.name
-      ? `${animal.name.toLowerCase().replace(/\s+/g, '-')}-medrec.json`
-      : 'animal-medrec.json';
+    const newVersion = version + 1;
+
+    const data: MedRecFile = {
+      metadata: {
+        version: newVersion,
+        exportedAt: new Date().toISOString(),
+      },
+      animal,
+    };
+    const basename = animal.name
+      ? `${animal.name.toLowerCase().replace(/\s+/g, '-')}-medrec`
+      : 'animal-medrec';
+    const filename = `${basename}_v${newVersion}.json`;
 
     downloadJson(data, filename);
-  }, [animal]);
+    setVersion(newVersion);
+  }, [animal, version, setVersion]);
 
   return {
     exportFile,
