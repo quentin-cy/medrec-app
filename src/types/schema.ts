@@ -71,7 +71,17 @@ const DEFAULT_VACCINATION_TYPES: TypeOption[] = [
   { value: 2, label: 'Bordetella' },
 ];
 
-const DEFAULT_VETS: TypeOption[] = [{ value: 0, label: 'Dr. Smith' }];
+export const VetOptionSchema = z.object({
+  value: z.number().int().nonnegative(),
+  name: z.string().min(1, 'Name is required'),
+  practice: z.string().default(''),
+});
+
+export type VetOption = z.infer<typeof VetOptionSchema>;
+
+const DEFAULT_VETS: VetOption[] = [
+  { value: 0, name: 'Dr. Smith', practice: '' },
+];
 
 export const ContextSchema = z.object({
   pest_control_types: z
@@ -80,7 +90,7 @@ export const ContextSchema = z.object({
   vaccination_types: z
     .array(TypeOptionSchema)
     .default(DEFAULT_VACCINATION_TYPES),
-  vets: z.array(TypeOptionSchema).default(DEFAULT_VETS),
+  vets: z.array(VetOptionSchema).default(DEFAULT_VETS),
 });
 
 export type Context = z.infer<typeof ContextSchema>;

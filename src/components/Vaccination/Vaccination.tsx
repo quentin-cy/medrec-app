@@ -34,21 +34,23 @@ export function Vaccination() {
     [context.vaccination_types],
   );
 
+  const formatVetDisplay = (v: { name: string; practice: string }) =>
+    v.practice ? `${v.name} (${v.practice})` : v.name;
+
   const vetOptions = useMemo(
     () =>
       context.vets.map(v => ({
         value: String(v.value),
-        label: v.label,
+        label: formatVetDisplay(v),
       })),
     [context.vets],
   );
 
   const vetLabels = useMemo(
     () =>
-      Object.fromEntries(context.vets.map(v => [v.value, v.label])) as Record<
-        number,
-        string
-      >,
+      Object.fromEntries(
+        context.vets.map(v => [v.value, formatVetDisplay(v)]),
+      ) as Record<number, string>,
     [context.vets],
   );
 

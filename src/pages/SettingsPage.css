@@ -139,3 +139,7 @@
   border-color: var(--color-primary);
   background: var(--color-surface-hover);
 }
+
+.settings-page-practice-input {
+  flex: 0.8;
+}

@@ -30,7 +30,7 @@ const DEFAULT_CONTEXT: Context = {
     { value: 1, label: 'DHPP' },
     { value: 2, label: 'Bordetella' },
   ],
-  vets: [{ value: 0, label: 'Dr. Smith' }],
+  vets: [{ value: 0, name: 'Dr. Smith', practice: '' }],
 };
 
 const MedRecContext = createContext<MedRecContextValue | undefined>(undefined);

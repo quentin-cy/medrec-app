@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMedRec } from '../context/MedRecContext';
-import type { TypeOption } from '../types/schema';
+import type { TypeOption, VetOption } from '../types/schema';
 import './SettingsPage.css';
 
 export function SettingsPage() {
@@ -77,8 +77,13 @@ export function SettingsPage() {
 
   const vets = context.vets;
 
-  const handleVetLabelChange = (index: number, label: string) => {
-    const updated = vets.map((v, i) => (i === index ? { ...v, label } : v));
+  const handleVetNameChange = (index: number, name: string) => {
+    const updated = vets.map((v, i) => (i === index ? { ...v, name } : v));
+    updateContext({ vets: updated });
+  };
+
+  const handleVetPracticeChange = (index: number, practice: string) => {
+    const updated = vets.map((v, i) => (i === index ? { ...v, practice } : v));
     updateContext({ vets: updated });
   };
 
@@ -90,7 +95,7 @@ export function SettingsPage() {
   const handleVetAdd = () => {
     const nextValue =
       vets.length > 0 ? Math.max(...vets.map(v => v.value)) + 1 : 0;
-    const entry: TypeOption = { value: nextValue, label: '' };
+    const entry: VetOption = { value: nextValue, name: '', practice: '' };
     updateContext({ vets: [...vets, entry] });
   };
 
@@ -229,9 +234,18 @@ export function SettingsPage() {
                   <input
                     className="settings-page-label-input"
                     type="text"
-                    value={vet.label}
-                    onChange={e => handleVetLabelChange(index, e.target.value)}
+                    value={vet.name}
+                    onChange={e => handleVetNameChange(index, e.target.value)}
                     placeholder="Vet name"
+                  />
+                  <input
+                    className="settings-page-label-input settings-page-practice-input"
+                    type="text"
+                    value={vet.practice}
+                    onChange={e =>
+                      handleVetPracticeChange(index, e.target.value)
+                    }
+                    placeholder="Practice (optional)"
                   />
                   <button
                     className={
