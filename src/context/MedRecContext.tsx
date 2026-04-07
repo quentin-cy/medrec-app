@@ -5,7 +5,8 @@ import {
   useCallback,
   type ReactNode,
 } from 'react';
-import type { AnimalRecord, Context } from '../types/schema';
+import type { AnimalRecord } from '../types/schema';
+import type { AppContext } from '../types/appContext.ts';
 
 interface MedRecContextValue {
   animal: AnimalRecord | null;
@@ -13,22 +14,19 @@ interface MedRecContextValue {
   updateAnimal: (updates: Partial<AnimalRecord>) => void;
   version: number;
   setVersion: (version: number) => void;
-  context: Context;
-  setContext: (context: Context) => void;
-  updateContext: (updates: Partial<Context>) => void;
+  context: AppContext;
+  setContext: (context: AppContext) => void;
+  updateContext: (updates: Partial<AppContext>) => void;
   hasUnsavedChanges: boolean;
   setHasUnsavedChanges: (value: boolean) => void;
 }
 
-const DEFAULT_CONTEXT: Context = {
+const DEFAULT_CONTEXT: AppContext = {
   pest_control_types: [
     { value: 0, label: 'Dewormer' },
-    { value: 1, label: 'Flea Protection' },
   ],
   vaccination_types: [
     { value: 0, label: 'Rabies' },
-    { value: 1, label: 'DHPP' },
-    { value: 2, label: 'Bordetella' },
   ],
   vets: [{ value: 0, name: 'Dr. Smith', practice: '' }],
 };
@@ -38,7 +36,7 @@ const MedRecContext = createContext<MedRecContextValue | undefined>(undefined);
 export function MedRecProvider({ children }: { children: ReactNode }) {
   const [animal, setAnimalState] = useState<AnimalRecord | null>(null);
   const [version, setVersion] = useState(0);
-  const [context, setContext] = useState<Context>(DEFAULT_CONTEXT);
+  const [context, setContext] = useState<AppContext>(DEFAULT_CONTEXT);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const setAnimal = useCallback((animal: AnimalRecord | null) => {
@@ -56,7 +54,7 @@ export function MedRecProvider({ children }: { children: ReactNode }) {
     setHasUnsavedChanges(true);
   }, []);
 
-  const updateContext = useCallback((updates: Partial<Context>) => {
+  const updateContext = useCallback((updates: Partial<AppContext>) => {
     setContext(prev => ({ ...prev, ...updates }));
     setHasUnsavedChanges(true);
   }, []);

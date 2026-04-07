@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import { AnimalForm } from '../components/AnimalForm/AnimalForm';
-import { WeightHistory } from '../components/WeightHistory/WeightHistory';
-import { PestControl } from '../components/PestControl/PestControl';
-import { Vaccination } from '../components/Vaccination/Vaccination';
+import { GeneralInformation } from '../components/FormBlocks/GeneralInformation/GeneralInformation.tsx';
+import { WeightHistory } from '../components/FormBlocks/WeightHistory/WeightHistory';
+import { PestControl } from '../components/FormBlocks/PestControl/PestControl';
+import { Vaccination } from '../components/FormBlocks/Vaccination/Vaccination';
 import { useMedRec } from '../context/MedRecContext';
-import { useToast } from '../components/ui/Toast/Toast';
+import { useToast } from '../components/common/Toast/Toast';
 import { AnimalRecordSchema } from '../types/schema';
 import { useEffect, useState, useCallback } from 'react';
 import './AnimalPage.css';
@@ -84,7 +84,7 @@ export function AnimalPage() {
           </div>
         </div>
       </div>
-      <AnimalForm
+      <GeneralInformation
         fieldErrors={fieldErrors}
         onClearError={field =>
           setFieldErrors(prev => {

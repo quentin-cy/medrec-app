@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useMedRec } from '../context/MedRecContext';
 import type { MedRecFile } from '../types/schema';
-import { downloadJson } from '../lib/utils';
+import { downloadJson } from '../utils/utils';
 
 interface UseFileExportReturn {
   exportFile: () => void;

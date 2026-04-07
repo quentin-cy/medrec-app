@@ -1,4 +1,11 @@
 import { z } from 'zod';
+import { MetadataSchema } from './metadata.ts';
+import {
+  ContextSchema,
+  DEFAULT_PEST_CONTROL_TYPES,
+  DEFAULT_VACCINATION_TYPES,
+  DEFAULT_VETS,
+} from './appContext.ts';
 
 export const SexEnum = z.enum(['male', 'female', 'unknown']);
 export type Sex = z.infer<typeof SexEnum>;
@@ -45,55 +52,6 @@ export const AnimalRecordSchema = z.object({
 });
 
 export type AnimalRecord = z.infer<typeof AnimalRecordSchema>;
-
-export const MetadataSchema = z.object({
-  version: z.number().int().nonnegative(),
-  exportedAt: z.string(),
-});
-
-export type Metadata = z.infer<typeof MetadataSchema>;
-
-export const TypeOptionSchema = z.object({
-  value: z.number().int().nonnegative(),
-  label: z.string().min(1, 'Label is required'),
-});
-
-export type TypeOption = z.infer<typeof TypeOptionSchema>;
-
-const DEFAULT_PEST_CONTROL_TYPES: TypeOption[] = [
-  { value: 0, label: 'Dewormer' },
-  { value: 1, label: 'Flea Protection' },
-];
-
-const DEFAULT_VACCINATION_TYPES: TypeOption[] = [
-  { value: 0, label: 'Rabies' },
-  { value: 1, label: 'DHPP' },
-  { value: 2, label: 'Bordetella' },
-];
-
-export const VetOptionSchema = z.object({
-  value: z.number().int().nonnegative(),
-  name: z.string().min(1, 'Name is required'),
-  practice: z.string().default(''),
-});
-
-export type VetOption = z.infer<typeof VetOptionSchema>;
-
-const DEFAULT_VETS: VetOption[] = [
-  { value: 0, name: 'Dr. Smith', practice: '' },
-];
-
-export const ContextSchema = z.object({
-  pest_control_types: z
-    .array(TypeOptionSchema)
-    .default(DEFAULT_PEST_CONTROL_TYPES),
-  vaccination_types: z
-    .array(TypeOptionSchema)
-    .default(DEFAULT_VACCINATION_TYPES),
-  vets: z.array(VetOptionSchema).default(DEFAULT_VETS),
-});
-
-export type Context = z.infer<typeof ContextSchema>;
 
 export const MedRecFileSchema = z.object({
   metadata: MetadataSchema.default({ version: 0, exportedAt: '' }),

@@ -1,5 +1,6 @@
 import * as SelectPrimitive from '@radix-ui/react-select';
 import './Select.css';
+import { CheckIcon, ChevronDownIcon } from '../icons/icons.tsx';
 
 interface SelectOption {
   value: string;
@@ -14,7 +15,6 @@ interface SelectProps {
   label?: string;
   hasError?: boolean;
 }
-
 export function Select({
   value,
   onValueChange,
@@ -67,42 +67,3 @@ export function Select({
   );
 }
 
-function ChevronDownIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M4 6L8 10L12 6"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M3 8L6.5 11.5L13 5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}

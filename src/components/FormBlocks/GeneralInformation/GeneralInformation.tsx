@@ -1,9 +1,9 @@
 import * as Label from '@radix-ui/react-label';
-import { Select } from '../ui/Select/Select';
-import { DateInput } from '../ui/DateInput/DateInput';
-import { useMedRec } from '../../context/MedRecContext';
-import type { FieldErrors } from '../../pages/AnimalPage';
-import './AnimalForm.css';
+import { Select } from '../../common/Select/Select.tsx';
+import { DateInput } from '../../common/DateInput/DateInput.tsx';
+import { useMedRec } from '../../../context/MedRecContext.tsx';
+import type { FieldErrors } from '../../../pages/AnimalPage.tsx';
+import './GeneralInformation.css';
 
 const SPECIES_OPTIONS = [
   { value: 'dog', label: 'Dog' },
@@ -25,7 +25,7 @@ interface AnimalFormProps {
   onClearError?: (field: string) => void;
 }
 
-export function AnimalForm({
+export function GeneralInformation({
   fieldErrors = {},
   onClearError,
 }: AnimalFormProps) {

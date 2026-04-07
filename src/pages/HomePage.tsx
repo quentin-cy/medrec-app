@@ -2,8 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import { FileDropZone } from '../components/FileDropZone/FileDropZone';
 import { useMedRec } from '../context/MedRecContext';
 import { useFileImport } from '../hooks/useFileImport';
-import { useToast } from '../components/ui/Toast/Toast';
-import { createBlankRecord } from '../lib/utils';
+import { useToast } from '../components/common/Toast/Toast';
+import { createBlankRecord } from '../utils/utils';
 import './HomePage.css';
 
 export function HomePage() {
