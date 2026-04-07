@@ -3,19 +3,19 @@ import { GeneralInformation } from '../components/FormBlocks/GeneralInformation/
 import { WeightHistory } from '../components/FormBlocks/WeightHistory/WeightHistory';
 import { PestControl } from '../components/FormBlocks/PestControl/PestControl';
 import { Vaccination } from '../components/FormBlocks/Vaccination/Vaccination';
-import { useToast } from '../components/common/Toast/Toast';
 import { AnimalRecordSchema } from '../types/schema';
 import { useEffect, useState, useCallback, useContext } from 'react';
 import './AnimalPage.css';
 import { useFileExport } from '../hooks/useFileExport';
 import { MedRecContext } from '../context/MedRecContext.tsx';
+import { ToastContext } from '../components/common/Toast/ToastContext.tsx';
 
 export type FieldErrors = Record<string, string>;
 
 export function AnimalPage() {
   const { medicalRecord } = useContext(MedRecContext);
   const navigate = useNavigate();
-  const toast = useToast();
+  const toast = useContext(ToastContext);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const { exportFile, canExport } = useFileExport();
 

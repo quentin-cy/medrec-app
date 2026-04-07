@@ -1,16 +1,16 @@
 import { useNavigate } from 'react-router-dom';
 import { FileDropZone } from '../components/FileDropZone/FileDropZone';
 import { useFileImport } from '../hooks/useFileImport';
-import { useToast } from '../components/common/Toast/Toast';
 import { createBlankRecord } from '../utils/utils';
 import './HomePage.css';
 import { useContext } from 'react';
 import { MedRecContext } from '../context/MedRecContext.tsx';
+import { ToastContext } from '../components/common/Toast/ToastContext.tsx';
 
 export function HomePage() {
   const { initAnimal, setRecordVersion, setMedicalContext } = useContext(MedRecContext);
   const { importFile } = useFileImport();
-  const toast = useToast();
+  const toast = useContext(ToastContext);
   const navigate = useNavigate();
 
   const handleFileSelected = async (file: File) => {
