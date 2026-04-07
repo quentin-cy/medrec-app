@@ -20,9 +20,12 @@ export function AnimalPage() {
   const { exportFile, canExport } = useFileExport();
 
   const handleExport = () => {
+
     try {
-      exportFile();
-      toast.success('Exported', 'Medical record downloaded successfully');
+      if (validate()){
+        exportFile();
+        toast.success('Exported', 'Medical record downloaded successfully');
+      }
     } catch {
       toast.error('Export failed', 'Could not export the medical record');
     }
@@ -34,8 +37,8 @@ export function AnimalPage() {
     }
   }, [medicalRecord, navigate]);
 
-  const handleValidate = useCallback(() => {
-    if (!medicalRecord) return;
+  const validate = useCallback(():boolean => {
+    if (!medicalRecord) return false;
 
     const result = AnimalRecordSchema.safeParse(medicalRecord);
 
@@ -57,6 +60,7 @@ export function AnimalPage() {
         `${count} field${count > 1 ? 's' : ''} need${count === 1 ? 's' : ''} attention`,
       );
     }
+    return result.success;
   }, [medicalRecord, toast]);
 
   if (!medicalRecord) return null;
@@ -71,10 +75,6 @@ export function AnimalPage() {
           )}
         </div>
         <div className="animal-page-header-right">
-          <button className="animal-page-validate-btn" onClick={handleValidate}>
-            <CheckIcon />
-            Validate
-          </button>
           <div className="animal-page-actions">
             {canExport && (
               <button className="animal-page-export-btn" onClick={handleExport}>
@@ -98,26 +98,5 @@ export function AnimalPage() {
       <PestControl />
       <Vaccination />
     </div>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M9 12L11 14L15 10"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-    </svg>
   );
 }
