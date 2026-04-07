@@ -3,17 +3,17 @@ import { GeneralInformation } from '../components/FormBlocks/GeneralInformation/
 import { WeightHistory } from '../components/FormBlocks/WeightHistory/WeightHistory';
 import { PestControl } from '../components/FormBlocks/PestControl/PestControl';
 import { Vaccination } from '../components/FormBlocks/Vaccination/Vaccination';
-import { useMedRec } from '../context/MedRecContext';
 import { useToast } from '../components/common/Toast/Toast';
 import { AnimalRecordSchema } from '../types/schema';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useContext } from 'react';
 import './AnimalPage.css';
 import { useFileExport } from '../hooks/useFileExport';
+import { MedRecContext } from '../context/MedRecContext.tsx';
 
 export type FieldErrors = Record<string, string>;
 
 export function AnimalPage() {
-  const { animal } = useMedRec();
+  const { medicalRecord } = useContext(MedRecContext);
   const navigate = useNavigate();
   const toast = useToast();
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -29,15 +29,15 @@ export function AnimalPage() {
   };
 
   useEffect(() => {
-    if (!animal) {
+    if (!medicalRecord) {
       navigate('/');
     }
-  }, [animal, navigate]);
+  }, [medicalRecord, navigate]);
 
   const handleValidate = useCallback(() => {
-    if (!animal) return;
+    if (!medicalRecord) return;
 
-    const result = AnimalRecordSchema.safeParse(animal);
+    const result = AnimalRecordSchema.safeParse(medicalRecord);
 
     if (result.success) {
       setFieldErrors({});
@@ -57,17 +57,17 @@ export function AnimalPage() {
         `${count} field${count > 1 ? 's' : ''} need${count === 1 ? 's' : ''} attention`,
       );
     }
-  }, [animal, toast]);
+  }, [medicalRecord, toast]);
 
-  if (!animal) return null;
+  if (!medicalRecord) return null;
 
   return (
     <div className="animal-page">
       <div className="animal-page-header">
         <div className="animal-page-header-left">
-          <h1 className="animal-page-title">{animal.name || 'New Animal'}</h1>
-          {animal.species && (
-            <span className="animal-page-badge">{animal.species}</span>
+          <h1 className="animal-page-title">{medicalRecord.name || 'New Animal'}</h1>
+          {medicalRecord.species && (
+            <span className="animal-page-badge">{medicalRecord.species}</span>
           )}
         </div>
         <div className="animal-page-header-right">

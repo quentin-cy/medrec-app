@@ -1,9 +1,10 @@
 import * as Label from '@radix-ui/react-label';
 import { Select } from '../../common/Select/Select.tsx';
 import { DateInput } from '../../common/DateInput/DateInput.tsx';
-import { useMedRec } from '../../../context/MedRecContext.tsx';
+import { MedRecContext } from '../../../context/MedRecContext.tsx';
 import type { FieldErrors } from '../../../pages/AnimalPage.tsx';
 import './GeneralInformation.css';
+import { useContext } from 'react';
 
 const SPECIES_OPTIONS = [
   { value: 'dog', label: 'Dog' },
@@ -29,18 +30,18 @@ export function GeneralInformation({
   fieldErrors = {},
   onClearError,
 }: AnimalFormProps) {
-  const { animal, updateAnimal } = useMedRec();
+  const { medicalRecord, updateMedicalRecord } = useContext(MedRecContext);
 
-  if (!animal) return null;
+  if (!medicalRecord) return null;
 
   const handleChange =
     (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      updateAnimal({ [field]: e.target.value });
+      updateMedicalRecord({ [field]: e.target.value });
       onClearError?.(field);
     };
 
   const handleSelectChange = (field: string, value: string) => {
-    updateAnimal({ [field]: value });
+    updateMedicalRecord({ [field]: value });
     onClearError?.(field);
   };
 
@@ -63,7 +64,7 @@ export function GeneralInformation({
               id="name"
               className={fieldClass('name')}
               type="text"
-              value={animal.name}
+              value={medicalRecord.name}
               onChange={handleChange('name')}
               placeholder="Animal name"
             />
@@ -77,7 +78,7 @@ export function GeneralInformation({
               Species
             </Label.Root>
             <Select
-              value={animal.species}
+              value={medicalRecord.species}
               onValueChange={value => handleSelectChange('species', value)}
               options={SPECIES_OPTIONS}
               placeholder="Select species"
@@ -96,7 +97,7 @@ export function GeneralInformation({
               id="breed"
               className={fieldClass('breed')}
               type="text"
-              value={animal.breed}
+              value={medicalRecord.breed}
               onChange={handleChange('breed')}
               placeholder="Breed"
             />
@@ -110,7 +111,7 @@ export function GeneralInformation({
               Sex
             </Label.Root>
             <Select
-              value={animal.sex}
+              value={medicalRecord.sex}
               onValueChange={value => handleSelectChange('sex', value)}
               options={SEX_OPTIONS}
               placeholder="Select sex"
@@ -127,9 +128,9 @@ export function GeneralInformation({
             </Label.Root>
             <DateInput
               id="dateOfBirth"
-              value={animal.dateOfBirth}
+              value={medicalRecord.dateOfBirth}
               onChange={iso => {
-                updateAnimal({ dateOfBirth: iso });
+                updateMedicalRecord({ dateOfBirth: iso });
                 onClearError?.('dateOfBirth');
               }}
               hasError={!!errorFor('dateOfBirth')}
@@ -149,9 +150,9 @@ export function GeneralInformation({
               id="microchipId"
               className={fieldClass('microchipId')}
               type="text"
-              value={animal.microchipId ?? ''}
+              value={medicalRecord.microchipId ?? ''}
               onChange={e => {
-                updateAnimal({ microchipId: e.target.value || null });
+                updateMedicalRecord({ microchipId: e.target.value || null });
                 onClearError?.('microchipId');
               }}
               placeholder="Optional"

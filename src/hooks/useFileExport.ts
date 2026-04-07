@@ -1,7 +1,7 @@
-import { useCallback } from 'react';
-import { useMedRec } from '../context/MedRecContext';
+import { useCallback, useContext } from 'react';
 import type { MedRecFile } from '../types/schema';
 import { downloadJson } from '../utils/utils';
+import { MedRecContext } from '../context/MedRecContext.tsx';
 
 interface UseFileExportReturn {
   exportFile: () => void;
@@ -9,32 +9,32 @@ interface UseFileExportReturn {
 }
 
 export function useFileExport(): UseFileExportReturn {
-  const { animal, version, setVersion, context } = useMedRec();
+  const { medicalRecord, recordVersion, setRecordVersion, medicalContext } = useContext(MedRecContext);
 
   const exportFile = useCallback(() => {
-    if (!animal) return;
+    if (!medicalRecord) return;
 
-    const newVersion = version + 1;
+    const newVersion = recordVersion + 1;
 
     const data: MedRecFile = {
       metadata: {
         version: newVersion,
         exportedAt: new Date().toISOString(),
       },
-      context,
-      animal,
+      context: medicalContext,
+      animal: medicalRecord,
     };
-    const basename = animal.name
-      ? `${animal.name.toLowerCase().replace(/\s+/g, '-')}-medrec`
+    const basename = medicalRecord.name
+      ? `${medicalRecord.name.toLowerCase().replace(/\s+/g, '-')}-medrec`
       : 'animal-medrec';
     const filename = `${basename}_v${newVersion}.json`;
 
     downloadJson(data, filename);
-    setVersion(newVersion);
-  }, [animal, version, setVersion, context]);
+    setRecordVersion(newVersion);
+  }, [medicalRecord, recordVersion, setRecordVersion, medicalContext]);
 
   return {
     exportFile,
-    canExport: animal !== null,
+    canExport: medicalRecord !== null,
   };
 }

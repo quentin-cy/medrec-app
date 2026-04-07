@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { useMedRec } from '../../../context/MedRecContext.tsx';
+import { useState, useMemo, useContext } from 'react';
+import { MedRecContext } from '../../../context/MedRecContext.tsx';
 import { Select } from '../../common/Select/Select.tsx';
 import { DateInput } from '../../common/DateInput/DateInput.tsx';
 import { generateId } from '../../../utils/utils.ts';
@@ -9,7 +9,7 @@ import { DeleteIcon } from '../../common/icons/icons.tsx';
 import { isoToEuropean } from '../../../utils/formatting.ts';
 
 export function Vaccination() {
-  const { animal, updateAnimal, context } = useMedRec();
+  const { medicalRecord, updateMedicalRecord, medicalContext } = useContext(MedRecContext);
   const [showForm, setShowForm] = useState(false);
   const [dateInput, setDateInput] = useState('');
   const [typeInput, setTypeInput] = useState('');
@@ -21,19 +21,19 @@ export function Vaccination() {
 
   const typeOptions = useMemo(
     () =>
-      context.vaccination_types.map(t => ({
+      medicalContext.vaccination_types.map(t => ({
         value: String(t.value),
         label: t.label,
       })),
-    [context.vaccination_types],
+    [medicalContext.vaccination_types],
   );
 
   const typeLabels = useMemo(
     () =>
       Object.fromEntries(
-        context.vaccination_types.map(t => [t.value, t.label]),
+        medicalContext.vaccination_types.map(t => [t.value, t.label]),
       ) as Record<number, string>,
-    [context.vaccination_types],
+    [medicalContext.vaccination_types],
   );
 
   const formatVetDisplay = (v: { name: string; practice: string }) =>
@@ -41,22 +41,22 @@ export function Vaccination() {
 
   const vetOptions = useMemo(
     () =>
-      context.vets.map(v => ({
+      medicalContext.vets.map(v => ({
         value: String(v.value),
         label: formatVetDisplay(v),
       })),
-    [context.vets],
+    [medicalContext.vets],
   );
 
   const vetLabels = useMemo(
     () =>
       Object.fromEntries(
-        context.vets.map(v => [v.value, formatVetDisplay(v)]),
+        medicalContext.vets.map(v => [v.value, formatVetDisplay(v)]),
       ) as Record<number, string>,
-    [context.vets],
+    [medicalContext.vets],
   );
-  if (!animal) return null;
-  const entries = [...animal.vaccination_history].sort((a, b) =>
+  if (!medicalRecord) return null;
+  const entries = [...medicalRecord.vaccination_history].sort((a, b) =>
     b.date.localeCompare(a.date),
   );
 
@@ -89,8 +89,8 @@ export function Vaccination() {
       vet: Number(vetInput),
     };
 
-    updateAnimal({
-      vaccination_history: [...animal.vaccination_history, entry],
+    updateMedicalRecord({
+      vaccination_history: [...medicalRecord.vaccination_history, entry],
     });
 
     setDateInput('');
@@ -102,8 +102,8 @@ export function Vaccination() {
   };
 
   const handleDelete = (id: string) => {
-    updateAnimal({
-      vaccination_history: animal.vaccination_history.filter(e => e.id !== id),
+    updateMedicalRecord({
+      vaccination_history: medicalRecord.vaccination_history.filter(e => e.id !== id),
     });
   };
 

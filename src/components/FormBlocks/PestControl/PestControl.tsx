@@ -1,5 +1,4 @@
-import { useState, useMemo } from 'react';
-import { useMedRec } from '../../../context/MedRecContext.tsx';
+import { useState, useMemo, useContext } from 'react';
 import { Select } from '../../common/Select/Select.tsx';
 import { DateInput } from '../../common/DateInput/DateInput.tsx';
 import { generateId } from '../../../utils/utils.ts';
@@ -7,9 +6,10 @@ import type { PestControl as PestControlEntry } from '../../../types/schema.ts';
 import './PestControl.css';
 import {DeleteIcon} from "../../common/icons/icons.tsx";
 import { isoToEuropean } from '../../../utils/formatting.ts';
+import { MedRecContext } from '../../../context/MedRecContext.tsx';
 
 export function PestControl() {
-  const { animal, updateAnimal, context } = useMedRec();
+  const { medicalRecord, updateMedicalRecord, medicalContext } = useContext(MedRecContext);
   const [showForm, setShowForm] = useState(false);
   const [dateInput, setDateInput] = useState('');
   const [typeInput, setTypeInput] = useState('');
@@ -19,24 +19,24 @@ export function PestControl() {
 
   const typeOptions = useMemo(
     () =>
-      context.pest_control_types.map(t => ({
+      medicalContext.pest_control_types.map(t => ({
         value: String(t.value),
         label: t.label,
       })),
-    [context.pest_control_types],
+    [medicalContext.pest_control_types],
   );
 
   const typeLabels = useMemo(
     () =>
       Object.fromEntries(
-        context.pest_control_types.map(t => [t.value, t.label]),
+        medicalContext.pest_control_types.map(t => [t.value, t.label]),
       ) as Record<number, string>,
-    [context.pest_control_types],
+    [medicalContext.pest_control_types],
   );
 
-  if (!animal) return null;
+  if (!medicalRecord) return null;
 
-  const entries = [...animal.pest_control_history].sort((a, b) =>
+  const entries = [...medicalRecord.pest_control_history].sort((a, b) =>
     b.date.localeCompare(a.date),
   );
 
@@ -64,8 +64,8 @@ export function PestControl() {
       comment: commentInput.trim(),
     };
 
-    updateAnimal({
-      pest_control_history: [...animal.pest_control_history, entry],
+    updateMedicalRecord({
+      pest_control_history: [...medicalRecord.pest_control_history, entry],
     });
 
     setDateInput('');
@@ -77,8 +77,8 @@ export function PestControl() {
   };
 
   const handleDelete = (id: string) => {
-    updateAnimal({
-      pest_control_history: animal.pest_control_history.filter(
+    updateMedicalRecord({
+      pest_control_history: medicalRecord.pest_control_history.filter(
         e => e.id !== id,
       ),
     });

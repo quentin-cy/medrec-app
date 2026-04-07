@@ -1,22 +1,22 @@
-import { useState } from 'react';
-import { useMedRec } from '../../../context/MedRecContext.tsx';
+import { useContext, useState } from 'react';
 import { DateInput } from '../../common/DateInput/DateInput.tsx';
 import { generateId } from '../../../utils/utils.ts';
 import type { Weighing } from '../../../types/schema.ts';
 import './WeightHistory.css';
 import { DeleteIcon } from '../../common/icons/icons.tsx';
 import { isoToEuropean } from '../../../utils/formatting.ts';
+import { MedRecContext } from '../../../context/MedRecContext.tsx';
 
 export function WeightHistory() {
-  const { animal, updateAnimal } = useMedRec();
+  const { medicalRecord, updateMedicalRecord } = useContext(MedRecContext);
   const [showForm, setShowForm] = useState(false);
   const [dateInput, setDateInput] = useState('');
   const [weightInput, setWeightInput] = useState('');
   const [formError, setFormError] = useState('');
 
-  if (!animal) return null;
+  if (!medicalRecord) return null;
 
-  const entries = [...animal.weight_history].sort((a, b) =>
+  const entries = [...medicalRecord.weight_history].sort((a, b) =>
     b.date.localeCompare(a.date),
   );
 
@@ -38,8 +38,8 @@ export function WeightHistory() {
       weight_kg: weight,
     };
 
-    updateAnimal({
-      weight_history: [...animal.weight_history, entry],
+    updateMedicalRecord({
+      weight_history: [...medicalRecord.weight_history, entry],
     });
 
     setDateInput('');
@@ -49,8 +49,8 @@ export function WeightHistory() {
   };
 
   const handleDelete = (id: string) => {
-    updateAnimal({
-      weight_history: animal.weight_history.filter(w => w.id !== id),
+    updateMedicalRecord({
+      weight_history: medicalRecord.weight_history.filter(w => w.id !== id),
     });
   };
 

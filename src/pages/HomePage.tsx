@@ -1,13 +1,14 @@
 import { useNavigate } from 'react-router-dom';
 import { FileDropZone } from '../components/FileDropZone/FileDropZone';
-import { useMedRec } from '../context/MedRecContext';
 import { useFileImport } from '../hooks/useFileImport';
 import { useToast } from '../components/common/Toast/Toast';
 import { createBlankRecord } from '../utils/utils';
 import './HomePage.css';
+import { useContext } from 'react';
+import { MedRecContext } from '../context/MedRecContext.tsx';
 
 export function HomePage() {
-  const { setAnimal, setVersion, setContext } = useMedRec();
+  const { initAnimal, setRecordVersion, setMedicalContext } = useContext(MedRecContext);
   const { importFile } = useFileImport();
   const toast = useToast();
   const navigate = useNavigate();
@@ -15,9 +16,9 @@ export function HomePage() {
   const handleFileSelected = async (file: File) => {
     try {
       const data = await importFile(file);
-      setAnimal(data.animal);
-      setVersion(data.metadata.version);
-      setContext(data.context);
+      initAnimal(data.animal);
+      setRecordVersion(data.metadata.version);
+      setMedicalContext(data.context);
       toast.success('Imported', `Loaded record for "${data.animal.name}"`);
       navigate('/animal');
     } catch (err) {
@@ -28,7 +29,7 @@ export function HomePage() {
   };
 
   const handleNewAnimal = () => {
-    setAnimal(createBlankRecord());
+    initAnimal(createBlankRecord());
     navigate('/animal');
   };
 

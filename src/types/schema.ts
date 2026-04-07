@@ -5,7 +5,7 @@ import {
   DEFAULT_PEST_CONTROL_TYPES,
   DEFAULT_VACCINATION_TYPES,
   DEFAULT_VETS,
-} from './appContext.ts';
+} from './medicalContext.ts';
 
 export const SexEnum = z.enum(['male', 'female', 'unknown']);
 export type Sex = z.infer<typeof SexEnum>;

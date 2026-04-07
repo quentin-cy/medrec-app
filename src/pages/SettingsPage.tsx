@@ -1,105 +1,106 @@
-import { useEffect, useMemo } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMedRec } from '../context/MedRecContext';
-import type { TypeOption, VetOption } from '../types/schema';
+import { MedRecContext } from '../context/MedRecContext';
 import './SettingsPage.css';
+import { DeleteIcon } from '../components/common/icons/icons.tsx';
+import type { TypeOption, VetOption } from '../types/medicalContext.ts';
 
 export function SettingsPage() {
-  const { animal, context, updateContext } = useMedRec();
+  const { medicalRecord, medicalContext, updateMedicalContext } = useContext(MedRecContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!animal) {
+    if (!medicalRecord) {
       navigate('/');
     }
-  }, [animal, navigate]);
+  }, [medicalRecord, navigate]);
 
   /* --- Pest Control Types --- */
 
   const usedPestControlTypes = useMemo(() => {
-    if (!animal) return new Set<number>();
-    return new Set(animal.pest_control_history.map(e => e.type));
-  }, [animal]);
+    if (!medicalRecord) return new Set<number>();
+    return new Set(medicalRecord.pest_control_history.map(e => e.type));
+  }, [medicalRecord]);
 
-  const pestTypes = context.pest_control_types;
+  const pestTypes = medicalContext.pest_control_types;
 
   const handlePestLabelChange = (index: number, label: string) => {
     const updated = pestTypes.map((t, i) =>
       i === index ? { ...t, label } : t,
     );
-    updateContext({ pest_control_types: updated });
+    updateMedicalContext({ pest_control_types: updated });
   };
 
   const handlePestDelete = (index: number) => {
     const updated = pestTypes.filter((_, i) => i !== index);
-    updateContext({ pest_control_types: updated });
+    updateMedicalContext({ pest_control_types: updated });
   };
 
   const handlePestAdd = () => {
     const nextValue =
       pestTypes.length > 0 ? Math.max(...pestTypes.map(t => t.value)) + 1 : 0;
     const entry: TypeOption = { value: nextValue, label: '' };
-    updateContext({ pest_control_types: [...pestTypes, entry] });
+    updateMedicalContext({ pest_control_types: [...pestTypes, entry] });
   };
 
   /* --- Vaccination Types --- */
 
   const usedVaccinationTypes = useMemo(() => {
-    if (!animal) return new Set<number>();
-    return new Set(animal.vaccination_history.map(e => e.type));
-  }, [animal]);
+    if (!medicalRecord) return new Set<number>();
+    return new Set(medicalRecord.vaccination_history.map(e => e.type));
+  }, [medicalRecord]);
 
-  const vacTypes = context.vaccination_types;
+  const vacTypes = medicalContext.vaccination_types;
 
   const handleVacLabelChange = (index: number, label: string) => {
     const updated = vacTypes.map((t, i) => (i === index ? { ...t, label } : t));
-    updateContext({ vaccination_types: updated });
+    updateMedicalContext({ vaccination_types: updated });
   };
 
   const handleVacDelete = (index: number) => {
     const updated = vacTypes.filter((_, i) => i !== index);
-    updateContext({ vaccination_types: updated });
+    updateMedicalContext({ vaccination_types: updated });
   };
 
   const handleVacAdd = () => {
     const nextValue =
       vacTypes.length > 0 ? Math.max(...vacTypes.map(t => t.value)) + 1 : 0;
     const entry: TypeOption = { value: nextValue, label: '' };
-    updateContext({ vaccination_types: [...vacTypes, entry] });
+    updateMedicalContext({ vaccination_types: [...vacTypes, entry] });
   };
 
   /* --- Vets --- */
 
   const usedVets = useMemo(() => {
-    if (!animal) return new Set<number>();
-    return new Set(animal.vaccination_history.map(e => e.vet));
-  }, [animal]);
+    if (!medicalRecord) return new Set<number>();
+    return new Set(medicalRecord.vaccination_history.map(e => e.vet));
+  }, [medicalRecord]);
 
-  const vets = context.vets;
+  const vets = medicalContext.vets;
 
   const handleVetNameChange = (index: number, name: string) => {
     const updated = vets.map((v, i) => (i === index ? { ...v, name } : v));
-    updateContext({ vets: updated });
+    updateMedicalContext({ vets: updated });
   };
 
   const handleVetPracticeChange = (index: number, practice: string) => {
     const updated = vets.map((v, i) => (i === index ? { ...v, practice } : v));
-    updateContext({ vets: updated });
+    updateMedicalContext({ vets: updated });
   };
 
   const handleVetDelete = (index: number) => {
     const updated = vets.filter((_, i) => i !== index);
-    updateContext({ vets: updated });
+    updateMedicalContext({ vets: updated });
   };
 
   const handleVetAdd = () => {
     const nextValue =
       vets.length > 0 ? Math.max(...vets.map(v => v.value)) + 1 : 0;
     const entry: VetOption = { value: nextValue, name: '', practice: '' };
-    updateContext({ vets: [...vets, entry] });
+    updateMedicalContext({ vets: [...vets, entry] });
   };
 
-  if (!animal) return null;
+  if (!medicalRecord) return null;
 
   return (
     <div className="settings-page">
@@ -274,32 +275,5 @@ export function SettingsPage() {
         </button>
       </div>
     </div>
-  );
-}
-
-function DeleteIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M3 6H5H21"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }
