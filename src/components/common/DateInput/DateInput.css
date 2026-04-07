@@ -1,0 +1,110 @@
+.date-input-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.date-input-field {
+  padding: var(--space-sm) var(--space-md);
+  padding-right: 36px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+  background: var(--color-surface);
+  height: 40px;
+  width: 100%;
+  transition: border-color var(--transition-fast);
+}
+
+.date-input-field:hover {
+  border-color: var(--color-border-focus);
+}
+
+.date-input-field:focus {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: -1px;
+  border-color: var(--color-border-focus);
+}
+
+.date-input-field::placeholder {
+  color: var(--color-text-muted);
+}
+
+.date-input-field-error {
+  border-color: var(--color-danger);
+}
+
+.date-input-field-error:hover {
+  border-color: var(--color-danger);
+}
+
+.date-input-field-error:focus {
+  outline-color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.date-input-trigger {
+  position: absolute;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.date-input-trigger:hover {
+  color: var(--color-text);
+  background-color: var(--color-surface-hover);
+}
+
+.date-input-popover {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-md);
+  z-index: 50;
+  animation: date-input-popover-in var(--transition-fast);
+}
+
+@keyframes date-input-popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* react-day-picker overrides to match app theme */
+.date-input-popover .rdp-root {
+  --rdp-accent-color: var(--color-primary);
+  --rdp-accent-background-color: var(--color-primary);
+  --rdp-day_button-height: 36px;
+  --rdp-day_button-width: 36px;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+}
+
+.date-input-popover .rdp-selected .rdp-day_button {
+  background-color: var(--color-primary);
+  color: var(--color-primary-text);
+  border-radius: var(--radius-md);
+}
+
+.date-input-popover .rdp-today:not(.rdp-selected) .rdp-day_button {
+  font-weight: 700;
+  color: var(--color-primary);
+}

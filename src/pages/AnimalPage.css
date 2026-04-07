@@ -1,28 +1,34 @@
-.page {
+.animal-page {
   display: flex;
   flex-direction: column;
   gap: var(--space-xl);
 }
 
-.header {
+.animal-page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-md);
 }
 
-.headerLeft {
+.animal-page-header-left {
   display: flex;
   align-items: center;
   gap: var(--space-md);
 }
 
-.title {
+.animal-page-header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.animal-page-title {
   font-size: var(--font-size-2xl);
   font-weight: 700;
 }
 
-.badge {
+.animal-page-badge {
   display: inline-flex;
   padding: var(--space-xs) var(--space-md);
   background: rgba(66, 99, 235, 0.08);
@@ -33,7 +39,7 @@
   text-transform: capitalize;
 }
 
-.validateBtn {
+.animal-page-validate-btn {
   display: inline-flex;
   align-items: center;
   gap: var(--space-sm);
@@ -51,12 +57,32 @@
   white-space: nowrap;
 }
 
-.validateBtn:hover {
+.animal-page-validate-btn:hover {
   border-color: var(--color-border-focus);
   background: var(--color-surface-hover);
 }
 
-.validateBtn:focus-visible {
+.animal-page-validate-btn:focus-visible {
   outline: 2px solid var(--color-border-focus);
   outline-offset: 2px;
+}
+
+.animal-page-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.animal-page-export-btn {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  transition: background var(--transition-fast);
+}
+
+.animal-page-export-btn:hover {
+  background: var(--color-primary-hover);
 }

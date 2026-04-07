@@ -5,32 +5,57 @@ import {
   useCallback,
   type ReactNode,
 } from 'react';
-import type { Animal } from '../types/schema';
+import type { AnimalRecord } from '../types/schema';
+import type { AppContext } from '../types/appContext.ts';
 
 interface MedRecContextValue {
-  animal: Animal | null;
-  setAnimal: (animal: Animal | null) => void;
-  updateAnimal: (updates: Partial<Animal>) => void;
+  animal: AnimalRecord | null;
+  setAnimal: (animal: AnimalRecord | null) => void;
+  updateAnimal: (updates: Partial<AnimalRecord>) => void;
+  version: number;
+  setVersion: (version: number) => void;
+  context: AppContext;
+  setContext: (context: AppContext) => void;
+  updateContext: (updates: Partial<AppContext>) => void;
   hasUnsavedChanges: boolean;
   setHasUnsavedChanges: (value: boolean) => void;
 }
 
+const DEFAULT_CONTEXT: AppContext = {
+  pest_control_types: [
+    { value: 0, label: 'Dewormer' },
+  ],
+  vaccination_types: [
+    { value: 0, label: 'Rabies' },
+  ],
+  vets: [{ value: 0, name: 'Dr. Smith', practice: '' }],
+};
+
 const MedRecContext = createContext<MedRecContextValue | undefined>(undefined);
 
 export function MedRecProvider({ children }: { children: ReactNode }) {
-  const [animal, setAnimalState] = useState<Animal | null>(null);
+  const [animal, setAnimalState] = useState<AnimalRecord | null>(null);
+  const [version, setVersion] = useState(0);
+  const [context, setContext] = useState<AppContext>(DEFAULT_CONTEXT);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  const setAnimal = useCallback((animal: Animal | null) => {
+  const setAnimal = useCallback((animal: AnimalRecord | null) => {
     setAnimalState(animal);
+    setVersion(0);
+    setContext(DEFAULT_CONTEXT);
     setHasUnsavedChanges(false);
   }, []);
 
-  const updateAnimal = useCallback((updates: Partial<Animal>) => {
+  const updateAnimal = useCallback((updates: Partial<AnimalRecord>) => {
     setAnimalState(prev => {
       if (!prev) return prev;
       return { ...prev, ...updates };
     });
+    setHasUnsavedChanges(true);
+  }, []);
+
+  const updateContext = useCallback((updates: Partial<AppContext>) => {
+    setContext(prev => ({ ...prev, ...updates }));
     setHasUnsavedChanges(true);
   }, []);
 
@@ -40,6 +65,11 @@ export function MedRecProvider({ children }: { children: ReactNode }) {
         animal,
         setAnimal,
         updateAnimal,
+        version,
+        setVersion,
+        context,
+        setContext,
+        updateContext,
         hasUnsavedChanges,
         setHasUnsavedChanges,
       }}

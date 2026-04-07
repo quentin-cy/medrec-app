@@ -1,10 +1,14 @@
 import { useNavigate } from 'react-router-dom';
-import { AnimalForm } from '../components/AnimalForm/AnimalForm';
+import { GeneralInformation } from '../components/FormBlocks/GeneralInformation/GeneralInformation.tsx';
+import { WeightHistory } from '../components/FormBlocks/WeightHistory/WeightHistory';
+import { PestControl } from '../components/FormBlocks/PestControl/PestControl';
+import { Vaccination } from '../components/FormBlocks/Vaccination/Vaccination';
 import { useMedRec } from '../context/MedRecContext';
-import { useToast } from '../components/ui/Toast/Toast';
-import { AnimalSchema } from '../types/schema';
+import { useToast } from '../components/common/Toast/Toast';
+import { AnimalRecordSchema } from '../types/schema';
 import { useEffect, useState, useCallback } from 'react';
-import styles from './AnimalPage.module.css';
+import './AnimalPage.css';
+import { useFileExport } from '../hooks/useFileExport';
 
 export type FieldErrors = Record<string, string>;
 
@@ -13,6 +17,16 @@ export function AnimalPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const { exportFile, canExport } = useFileExport();
+
+  const handleExport = () => {
+    try {
+      exportFile();
+      toast.success('Exported', 'Medical record downloaded successfully');
+    } catch {
+      toast.error('Export failed', 'Could not export the medical record');
+    }
+  };
 
   useEffect(() => {
     if (!animal) {
@@ -23,7 +37,7 @@ export function AnimalPage() {
   const handleValidate = useCallback(() => {
     if (!animal) return;
 
-    const result = AnimalSchema.safeParse(animal);
+    const result = AnimalRecordSchema.safeParse(animal);
 
     if (result.success) {
       setFieldErrors({});
@@ -48,20 +62,29 @@ export function AnimalPage() {
   if (!animal) return null;
 
   return (
-    <div className={styles.page}>
-      <div className={styles.header}>
-        <div className={styles.headerLeft}>
-          <h1 className={styles.title}>{animal.name || 'New Animal'}</h1>
+    <div className="animal-page">
+      <div className="animal-page-header">
+        <div className="animal-page-header-left">
+          <h1 className="animal-page-title">{animal.name || 'New Animal'}</h1>
           {animal.species && (
-            <span className={styles.badge}>{animal.species}</span>
+            <span className="animal-page-badge">{animal.species}</span>
           )}
         </div>
-        <button className={styles.validateBtn} onClick={handleValidate}>
-          <CheckIcon />
-          Validate
-        </button>
+        <div className="animal-page-header-right">
+          <button className="animal-page-validate-btn" onClick={handleValidate}>
+            <CheckIcon />
+            Validate
+          </button>
+          <div className="animal-page-actions">
+            {canExport && (
+              <button className="animal-page-export-btn" onClick={handleExport}>
+                Export Record
+              </button>
+            )}
+          </div>
+        </div>
       </div>
-      <AnimalForm
+      <GeneralInformation
         fieldErrors={fieldErrors}
         onClearError={field =>
           setFieldErrors(prev => {
@@ -71,6 +94,9 @@ export function AnimalPage() {
           })
         }
       />
+      <WeightHistory />
+      <PestControl />
+      <Vaccination />
     </div>
   );
 }
