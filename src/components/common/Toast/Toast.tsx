@@ -1,14 +1,15 @@
 import {
-  createContext,
-  useContext,
   useCallback,
   useState,
   type ReactNode,
 } from 'react';
 import * as ToastPrimitive from '@radix-ui/react-toast';
 import './Toast.css';
-
-type ToastVariant = 'success' | 'error' | 'info';
+import {
+  ToastContext,
+  type IToast,
+  type ToastVariant,
+} from './ToastContext.tsx';
 
 interface ToastMessage {
   id: number;
@@ -17,13 +18,6 @@ interface ToastMessage {
   variant: ToastVariant;
 }
 
-interface ToastContextValue {
-  toast: (title: string, description?: string, variant?: ToastVariant) => void;
-  success: (title: string, description?: string) => void;
-  error: (title: string, description?: string) => void;
-}
-
-const ToastContext = createContext<ToastContextValue | undefined>(undefined);
 
 let toastId = 0;
 
@@ -48,7 +42,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     setToasts(prev => prev.filter(t => t.id !== id));
   }, []);
 
-  const contextValue: ToastContextValue = {
+  const contextValue: IToast = {
     toast: addToast,
     success: (title, description) => addToast(title, description, 'success'),
     error: (title, description) => addToast(title, description, 'error'),
@@ -85,10 +79,4 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useToast(): ToastContextValue {
-  const context = useContext(ToastContext);
-  if (!context) {
-    throw new Error('useToast must be used within a ToastProvider');
-  }
-  return context;
-}
+

@@ -1,22 +1,24 @@
-import { useState } from 'react';
-import { useMedRec } from '../../../context/MedRecContext.tsx';
+import { useContext, useState } from 'react';
 import { DateInput } from '../../common/DateInput/DateInput.tsx';
 import { generateId } from '../../../utils/utils.ts';
 import type { Weighing } from '../../../types/schema.ts';
 import './WeightHistory.css';
-import { DeleteIcon } from '../../common/icons/icons.tsx';
+import { DeleteIcon, PlusIcon } from '../../common/icons/icons.tsx';
 import { isoToEuropean } from '../../../utils/formatting.ts';
+import { MedRecContext } from '../../../context/MedRecContext.tsx';
+import { FormSection } from '../../FormSection/FormSection.tsx';
+import { SmallIconButton } from '../../common/IconButton/IconButton.tsx';
 
 export function WeightHistory() {
-  const { animal, updateAnimal } = useMedRec();
+  const { medicalRecord, updateMedicalRecord } = useContext(MedRecContext);
   const [showForm, setShowForm] = useState(false);
   const [dateInput, setDateInput] = useState('');
   const [weightInput, setWeightInput] = useState('');
   const [formError, setFormError] = useState('');
 
-  if (!animal) return null;
+  if (!medicalRecord) return null;
 
-  const entries = [...animal.weight_history].sort((a, b) =>
+  const entries = [...medicalRecord.weight_history].sort((a, b) =>
     b.date.localeCompare(a.date),
   );
 
@@ -38,8 +40,8 @@ export function WeightHistory() {
       weight_kg: weight,
     };
 
-    updateAnimal({
-      weight_history: [...animal.weight_history, entry],
+    updateMedicalRecord({
+      weight_history: [...medicalRecord.weight_history, entry],
     });
 
     setDateInput('');
@@ -49,26 +51,25 @@ export function WeightHistory() {
   };
 
   const handleDelete = (id: string) => {
-    updateAnimal({
-      weight_history: animal.weight_history.filter(w => w.id !== id),
+    updateMedicalRecord({
+      weight_history: medicalRecord.weight_history.filter(w => w.id !== id),
     });
   };
 
   return (
-    <div className="weight-history">
-      <div className="weight-history-header">
-        <h3 className="weight-history-title">Weight History</h3>
-        <button
-          className="weight-history-add-btn"
-          onClick={() => {
+    <FormSection
+      title="Weight History"
+      button={
+        <SmallIconButton
+          icon={<PlusIcon />}
+          text="Add Entry"
+          callback={() => {
             setShowForm(!showForm);
             setFormError('');
           }}
-        >
-          {showForm ? 'Cancel' : '+ Add Entry'}
-        </button>
-      </div>
-
+        />
+      }
+    >
       {showForm && (
         <div className="weight-history-form">
           <DateInput
@@ -134,9 +135,24 @@ export function WeightHistory() {
           </table>
         </>
       )}
-    </div>
+    </FormSection>
   );
 }
+
+const MONTH_LABELS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 
 function WeightChart({ entries }: { entries: Weighing[] }) {
   // Sort chronologically for the chart (oldest first)
@@ -147,6 +163,12 @@ function WeightChart({ entries }: { entries: Weighing[] }) {
   const maxW = Math.max(...weights);
   const rangeW = maxW - minW || 1;
 
+  // Convert dates to timestamps for proportional spacing
+  const timestamps = sorted.map(e => new Date(e.date).getTime());
+  const minT = timestamps[0];
+  const maxT = timestamps[timestamps.length - 1];
+  const rangeT = maxT - minT || 1;
+
   // Chart dimensions
   const width = 500;
   const height = 200;
@@ -155,10 +177,12 @@ function WeightChart({ entries }: { entries: Weighing[] }) {
   const chartW = width - padX * 2;
   const chartH = height - padY * 2;
 
+  // Helper: convert a timestamp to an X coordinate
+  const timeToX = (t: number) => padX + ((t - minT) / rangeT) * chartW;
+
+  // Data points positioned by actual date
   const points = sorted.map((entry, i) => {
-    const x =
-      padX +
-      (sorted.length === 1 ? chartW / 2 : (i / (sorted.length - 1)) * chartW);
+    const x = timeToX(timestamps[i]);
     const y = padY + chartH - ((entry.weight_kg - minW) / rangeW) * chartH;
     return { x, y, entry };
   });
@@ -171,6 +195,45 @@ function WeightChart({ entries }: { entries: Weighing[] }) {
     const y = padY + chartH - ((val - minW) / rangeW) * chartH;
     return { val: val.toFixed(1), y };
   });
+
+  // Generate monthly ticks between the data range
+  // Start from the 1st of the month of the earliest date,
+  // end at the 1st of the month after the latest date.
+  const minDate = new Date(sorted[0].date);
+
+  const monthTicks: {
+    x: number;
+    month: number;
+    year: number;
+    label: boolean;
+  }[] = [];
+  const cursor = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
+  // Advance one month so the first tick is inside or at the start of the range
+  if (cursor.getTime() < minT) {
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+  while (cursor.getTime() <= maxT) {
+    const t = cursor.getTime();
+    const month = cursor.getMonth(); // 0-indexed
+    const year = cursor.getFullYear();
+    // Label on January (0) and July (6)
+    const isLabelMonth = month === 0 || month === 6;
+    monthTicks.push({ x: timeToX(t), month, year, label: isLabelMonth });
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+
+  // Fallback: if no ticks got a label (data range < 6 months),
+  // label the first and last month ticks.
+  const hasAnyLabel = monthTicks.some(t => t.label);
+  if (!hasAnyLabel && monthTicks.length > 0) {
+    monthTicks[0].label = true;
+    if (monthTicks.length > 1) {
+      monthTicks[monthTicks.length - 1].label = true;
+    }
+  }
+
+  const tickTop = padY + chartH;
+  const tickLen = 5;
 
   return (
     <div className="weight-chart">
@@ -200,22 +263,43 @@ function WeightChart({ entries }: { entries: Weighing[] }) {
           </g>
         ))}
 
+        {/* Monthly tick marks and labels */}
+        {monthTicks.map((tick, i) => (
+          <g key={i}>
+            <line
+              x1={tick.x}
+              y1={tickTop}
+              x2={tick.x}
+              y2={tickTop + tickLen}
+              className={
+                tick.label ? 'weight-chart-tick-label' : 'weight-chart-tick'
+              }
+            />
+            {tick.label && (
+              <text
+                x={tick.x}
+                y={tickTop + tickLen + 12}
+                textAnchor="middle"
+                className="weight-chart-label"
+              >
+                {`${MONTH_LABELS[tick.month]} ${tick.year}`}
+              </text>
+            )}
+          </g>
+        ))}
+
         {/* Line */}
         <polyline points={polyline} fill="none" className="weight-chart-line" />
 
-        {/* Dots and x-labels */}
+        {/* Dots */}
         {points.map((p, i) => (
-          <g key={i}>
-            <circle cx={p.x} cy={p.y} r="4" className="weight-chart-dot" />
-            <text
-              x={p.x}
-              y={height - 6}
-              textAnchor="middle"
-              className="weight-chart-label"
-            >
-              {isoToEuropean(p.entry.date).slice(0, 5)}
-            </text>
-          </g>
+          <circle
+            key={i}
+            cx={p.x}
+            cy={p.y}
+            r="2"
+            className="weight-chart-dot"
+          />
         ))}
       </svg>
     </div>

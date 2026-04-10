@@ -166,16 +166,26 @@
 
 .weight-chart-line {
   stroke: var(--color-primary);
-  stroke-width: 2;
+  stroke-width: 1.5;
   stroke-linejoin: round;
   stroke-linecap: round;
 }
 
 .weight-chart-dot {
-  fill: var(--color-primary);
+  fill: var(--color-burned-peach);
 }
 
 .weight-chart-label {
   font-size: 11px;
   fill: var(--color-text-muted);
+}
+
+.weight-chart-tick {
+  stroke: var(--color-text-muted);
+  stroke-width: 1;
+}
+
+.weight-chart-tick-label {
+  stroke: var(--color-text-muted);
+  stroke-width: 2;
 }

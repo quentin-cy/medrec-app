@@ -3,41 +3,46 @@ import { GeneralInformation } from '../components/FormBlocks/GeneralInformation/
 import { WeightHistory } from '../components/FormBlocks/WeightHistory/WeightHistory';
 import { PestControl } from '../components/FormBlocks/PestControl/PestControl';
 import { Vaccination } from '../components/FormBlocks/Vaccination/Vaccination';
-import { useMedRec } from '../context/MedRecContext';
-import { useToast } from '../components/common/Toast/Toast';
 import { AnimalRecordSchema } from '../types/schema';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useContext } from 'react';
 import './AnimalPage.css';
 import { useFileExport } from '../hooks/useFileExport';
+import { MedRecContext } from '../context/MedRecContext.tsx';
+import { ToastContext } from '../components/common/Toast/ToastContext.tsx';
+import { SaveIcon } from '../components/common/icons/icons.tsx';
+import { IconButton } from '../components/common/IconButton/IconButton.tsx';
 
 export type FieldErrors = Record<string, string>;
 
 export function AnimalPage() {
-  const { animal } = useMedRec();
+  const { medicalRecord } = useContext(MedRecContext);
   const navigate = useNavigate();
-  const toast = useToast();
+  const toast = useContext(ToastContext);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const { exportFile, canExport } = useFileExport();
 
   const handleExport = () => {
+
     try {
-      exportFile();
-      toast.success('Exported', 'Medical record downloaded successfully');
+      if (validate()){
+        exportFile();
+        toast.success('Exported', 'Medical record downloaded successfully');
+      }
     } catch {
       toast.error('Export failed', 'Could not export the medical record');
     }
   };
 
   useEffect(() => {
-    if (!animal) {
+    if (!medicalRecord) {
       navigate('/');
     }
-  }, [animal, navigate]);
+  }, [medicalRecord, navigate]);
 
-  const handleValidate = useCallback(() => {
-    if (!animal) return;
+  const validate = useCallback(():boolean => {
+    if (!medicalRecord) return false;
 
-    const result = AnimalRecordSchema.safeParse(animal);
+    const result = AnimalRecordSchema.safeParse(medicalRecord);
 
     if (result.success) {
       setFieldErrors({});
@@ -57,30 +62,23 @@ export function AnimalPage() {
         `${count} field${count > 1 ? 's' : ''} need${count === 1 ? 's' : ''} attention`,
       );
     }
-  }, [animal, toast]);
+    return result.success;
+  }, [medicalRecord, toast]);
 
-  if (!animal) return null;
+  if (!medicalRecord) return null;
 
   return (
     <div className="animal-page">
       <div className="animal-page-header">
         <div className="animal-page-header-left">
-          <h1 className="animal-page-title">{animal.name || 'New Animal'}</h1>
-          {animal.species && (
-            <span className="animal-page-badge">{animal.species}</span>
+          <h1 className="animal-page-title">{medicalRecord.name || 'New Animal'}</h1>
+          {medicalRecord.species && (
+            <span className="animal-page-badge">{medicalRecord.species}</span>
           )}
         </div>
         <div className="animal-page-header-right">
-          <button className="animal-page-validate-btn" onClick={handleValidate}>
-            <CheckIcon />
-            Validate
-          </button>
           <div className="animal-page-actions">
-            {canExport && (
-              <button className="animal-page-export-btn" onClick={handleExport}>
-                Export Record
-              </button>
-            )}
+            {canExport && (<IconButton icon={<SaveIcon/>} text="Export Record" callback={handleExport}/>)}
           </div>
         </div>
       </div>
@@ -98,26 +96,5 @@ export function AnimalPage() {
       <PestControl />
       <Vaccination />
     </div>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M9 12L11 14L15 10"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-    </svg>
   );
 }

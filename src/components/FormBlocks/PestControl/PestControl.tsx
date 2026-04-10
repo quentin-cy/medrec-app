@@ -1,15 +1,19 @@
-import { useState, useMemo } from 'react';
-import { useMedRec } from '../../../context/MedRecContext.tsx';
+import { useState, useMemo, useContext } from 'react';
 import { Select } from '../../common/Select/Select.tsx';
 import { DateInput } from '../../common/DateInput/DateInput.tsx';
 import { generateId } from '../../../utils/utils.ts';
 import type { PestControl as PestControlEntry } from '../../../types/schema.ts';
 import './PestControl.css';
-import {DeleteIcon} from "../../common/icons/icons.tsx";
+import { DeleteIcon, PlusIcon } from '../../common/icons/icons.tsx';
 import { isoToEuropean } from '../../../utils/formatting.ts';
+import { MedRecContext } from '../../../context/MedRecContext.tsx';
+import { SmallIconButton } from '../../common/IconButton/IconButton.tsx';
+import { FormSection } from '../../FormSection/FormSection.tsx';
+import { TextField } from '../../common/TextField/TextField.tsx';
 
 export function PestControl() {
-  const { animal, updateAnimal, context } = useMedRec();
+  const { medicalRecord, updateMedicalRecord, medicalContext } =
+    useContext(MedRecContext);
   const [showForm, setShowForm] = useState(false);
   const [dateInput, setDateInput] = useState('');
   const [typeInput, setTypeInput] = useState('');
@@ -19,24 +23,24 @@ export function PestControl() {
 
   const typeOptions = useMemo(
     () =>
-      context.pest_control_types.map(t => ({
+      medicalContext.pest_control_types.map(t => ({
         value: String(t.value),
         label: t.label,
       })),
-    [context.pest_control_types],
+    [medicalContext.pest_control_types],
   );
 
   const typeLabels = useMemo(
     () =>
       Object.fromEntries(
-        context.pest_control_types.map(t => [t.value, t.label]),
+        medicalContext.pest_control_types.map(t => [t.value, t.label]),
       ) as Record<number, string>,
-    [context.pest_control_types],
+    [medicalContext.pest_control_types],
   );
 
-  if (!animal) return null;
+  if (!medicalRecord) return null;
 
-  const entries = [...animal.pest_control_history].sort((a, b) =>
+  const entries = [...medicalRecord.pest_control_history].sort((a, b) =>
     b.date.localeCompare(a.date),
   );
 
@@ -64,8 +68,8 @@ export function PestControl() {
       comment: commentInput.trim(),
     };
 
-    updateAnimal({
-      pest_control_history: [...animal.pest_control_history, entry],
+    updateMedicalRecord({
+      pest_control_history: [...medicalRecord.pest_control_history, entry],
     });
 
     setDateInput('');
@@ -77,28 +81,27 @@ export function PestControl() {
   };
 
   const handleDelete = (id: string) => {
-    updateAnimal({
-      pest_control_history: animal.pest_control_history.filter(
+    updateMedicalRecord({
+      pest_control_history: medicalRecord.pest_control_history.filter(
         e => e.id !== id,
       ),
     });
   };
 
   return (
-    <div className="pest-control">
-      <div className="pest-control-header">
-        <h3 className="pest-control-title">Pest Control</h3>
-        <button
-          className="pest-control-add-btn"
-          onClick={() => {
+    <FormSection
+      title="Pest control"
+      button={
+        <SmallIconButton
+          icon={<PlusIcon />}
+          text="Add Entry"
+          callback={() => {
             setShowForm(!showForm);
             setFormError('');
           }}
-        >
-          {showForm ? 'Cancel' : '+ Add Entry'}
-        </button>
-      </div>
-
+        />
+      }
+    >
       {showForm && (
         <div className="pest-control-form">
           <DateInput
@@ -119,23 +122,24 @@ export function PestControl() {
               placeholder="Type"
             />
           </div>
-          <input
-            className="pest-control-form-input pest-control-form-input-ref"
-            type="text"
-            placeholder="Product / reference"
+
+          <TextField
+            id="reference"
             value={referenceInput}
+            placeholder="Product reference"
             onChange={e => {
               setReferenceInput(e.target.value);
               setFormError('');
             }}
-          />
-          <input
-            className="pest-control-form-input pest-control-form-input-comment"
-            type="text"
-            placeholder="Comment (optional)"
+          ></TextField>
+
+          <TextField
+            id="comment"
             value={commentInput}
+            placeholder="Comment (optional)"
             onChange={e => setCommentInput(e.target.value)}
-          />
+          ></TextField>
+
           <button className="pest-control-form-confirm" onClick={handleAdd}>
             Add
           </button>
@@ -183,8 +187,6 @@ export function PestControl() {
           </tbody>
         </table>
       )}
-    </div>
+    </FormSection>
   );
 }
-
-

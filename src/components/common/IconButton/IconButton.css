@@ -1,0 +1,32 @@
+.icon-button {
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  transition: background var(--transition-fast);
+  display: flex;
+  gap: var(--space-md);
+  align-self: flex-start;
+}
+
+.icon-button-sm {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  transition: background var(--transition-fast);
+  display: flex;
+  gap: var(--space-md);
+  align-self: flex-start;
+}
+
+
+.icon-button:hover, .icon-button-sm:hover {
+  background: var(--color-primary-hover);
+}

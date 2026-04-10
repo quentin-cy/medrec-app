@@ -1,88 +1,37 @@
 import {
   createContext,
-  useContext,
-  useState,
-  useCallback,
-  type ReactNode,
 } from 'react';
 import type { AnimalRecord } from '../types/schema';
-import type { AppContext } from '../types/appContext.ts';
+import type { MedicalContext } from '../types/medicalContext.ts';
 
-interface MedRecContextValue {
-  animal: AnimalRecord | null;
-  setAnimal: (animal: AnimalRecord | null) => void;
-  updateAnimal: (updates: Partial<AnimalRecord>) => void;
-  version: number;
-  setVersion: (version: number) => void;
-  context: AppContext;
-  setContext: (context: AppContext) => void;
-  updateContext: (updates: Partial<AppContext>) => void;
+interface MedRecContext {
+  medicalRecord: AnimalRecord | null;
+  initAnimal: (animal: AnimalRecord | null) => void;
+  updateMedicalRecord: (updates: Partial<AnimalRecord>) => void;
+  recordVersion: number;
+  setRecordVersion: (version: number) => void;
+  medicalContext: MedicalContext;
+  setMedicalContext: (context: MedicalContext) => void;
+  updateMedicalContext: (updates: Partial<MedicalContext>) => void;
   hasUnsavedChanges: boolean;
   setHasUnsavedChanges: (value: boolean) => void;
 }
 
-const DEFAULT_CONTEXT: AppContext = {
-  pest_control_types: [
-    { value: 0, label: 'Dewormer' },
-  ],
-  vaccination_types: [
-    { value: 0, label: 'Rabies' },
-  ],
-  vets: [{ value: 0, name: 'Dr. Smith', practice: '' }],
+const EmptyMedRecContext: MedRecContext = {
+  medicalRecord: null,
+  initAnimal: () => {},
+  updateMedicalRecord: () => {},
+  recordVersion: 0,
+  setRecordVersion: () => {},
+  medicalContext: {
+    pest_control_types: [],
+    vaccination_types: [],
+    vets: [],
+  },
+  setMedicalContext: () => {},
+  updateMedicalContext: () => {},
+  hasUnsavedChanges: false,
+  setHasUnsavedChanges: () => {},
 };
 
-const MedRecContext = createContext<MedRecContextValue | undefined>(undefined);
-
-export function MedRecProvider({ children }: { children: ReactNode }) {
-  const [animal, setAnimalState] = useState<AnimalRecord | null>(null);
-  const [version, setVersion] = useState(0);
-  const [context, setContext] = useState<AppContext>(DEFAULT_CONTEXT);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-
-  const setAnimal = useCallback((animal: AnimalRecord | null) => {
-    setAnimalState(animal);
-    setVersion(0);
-    setContext(DEFAULT_CONTEXT);
-    setHasUnsavedChanges(false);
-  }, []);
-
-  const updateAnimal = useCallback((updates: Partial<AnimalRecord>) => {
-    setAnimalState(prev => {
-      if (!prev) return prev;
-      return { ...prev, ...updates };
-    });
-    setHasUnsavedChanges(true);
-  }, []);
-
-  const updateContext = useCallback((updates: Partial<AppContext>) => {
-    setContext(prev => ({ ...prev, ...updates }));
-    setHasUnsavedChanges(true);
-  }, []);
-
-  return (
-    <MedRecContext.Provider
-      value={{
-        animal,
-        setAnimal,
-        updateAnimal,
-        version,
-        setVersion,
-        context,
-        setContext,
-        updateContext,
-        hasUnsavedChanges,
-        setHasUnsavedChanges,
-      }}
-    >
-      {children}
-    </MedRecContext.Provider>
-  );
-}
-
-export function useMedRec(): MedRecContextValue {
-  const context = useContext(MedRecContext);
-  if (!context) {
-    throw new Error('useMedRec must be used within a MedRecProvider');
-  }
-  return context;
-}
+export const MedRecContext = createContext<MedRecContext>(EmptyMedRecContext);

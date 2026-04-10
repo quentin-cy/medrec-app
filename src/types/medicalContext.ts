@@ -5,7 +5,7 @@ const TypeOptionSchema = z.object({
   label: z.string().min(1, 'Label is required'),
 });
 
-type TypeOption = z.infer<typeof TypeOptionSchema>;
+export type TypeOption = z.infer<typeof TypeOptionSchema>;
 
 export const DEFAULT_PEST_CONTROL_TYPES: TypeOption[] = [
   { value: 0, label: 'Dewormer' },
@@ -37,4 +37,4 @@ export const ContextSchema = z.object({
   vets: z.array(VetOptionSchema).default(DEFAULT_VETS),
 });
 
-export type AppContext = z.infer<typeof ContextSchema>;
+export type MedicalContext = z.infer<typeof ContextSchema>;

@@ -1,9 +1,12 @@
 import * as Label from '@radix-ui/react-label';
 import { Select } from '../../common/Select/Select.tsx';
 import { DateInput } from '../../common/DateInput/DateInput.tsx';
-import { useMedRec } from '../../../context/MedRecContext.tsx';
+import { MedRecContext } from '../../../context/MedRecContext.tsx';
 import type { FieldErrors } from '../../../pages/AnimalPage.tsx';
 import './GeneralInformation.css';
+import { useContext } from 'react';
+import { FormSection } from '../../FormSection/FormSection.tsx';
+import { TextField } from '../../common/TextField/TextField.tsx';
 
 const SPECIES_OPTIONS = [
   { value: 'dog', label: 'Dog' },
@@ -29,55 +32,42 @@ export function GeneralInformation({
   fieldErrors = {},
   onClearError,
 }: AnimalFormProps) {
-  const { animal, updateAnimal } = useMedRec();
+  const { medicalRecord, updateMedicalRecord } = useContext(MedRecContext);
 
-  if (!animal) return null;
+  if (!medicalRecord) return null;
 
   const handleChange =
     (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      updateAnimal({ [field]: e.target.value });
+      updateMedicalRecord({ [field]: e.target.value });
       onClearError?.(field);
     };
 
   const handleSelectChange = (field: string, value: string) => {
-    updateAnimal({ [field]: value });
+    updateMedicalRecord({ [field]: value });
     onClearError?.(field);
   };
 
   const errorFor = (field: string) => fieldErrors[field];
-  const fieldClass = (field: string) =>
-    errorFor(field)
-      ? 'animal-form-input animal-form-input-error'
-      : 'animal-form-input';
 
   return (
     <form className="animal-form" onSubmit={e => e.preventDefault()}>
-      <div className="animal-form-section">
-        <h3 className="animal-form-section-title">Basic Information</h3>
+      <FormSection title="General Information">
         <div className="animal-form-grid">
-          <div className="animal-form-field">
-            <Label.Root className="animal-form-label" htmlFor="name">
-              Name
-            </Label.Root>
-            <input
-              id="name"
-              className={fieldClass('name')}
-              type="text"
-              value={animal.name}
-              onChange={handleChange('name')}
-              placeholder="Animal name"
-            />
-            {errorFor('name') && (
-              <span className="animal-form-error">{errorFor('name')}</span>
-            )}
-          </div>
+          <TextField
+            id="name"
+            label="Name"
+            value={medicalRecord.name}
+            placeholder="Animal name"
+            onChange={handleChange('name')}
+            error={errorFor('name')}
+          ></TextField>
 
           <div className="animal-form-field">
             <Label.Root className="animal-form-label" htmlFor="species">
               Species
             </Label.Root>
             <Select
-              value={animal.species}
+              value={medicalRecord.species}
               onValueChange={value => handleSelectChange('species', value)}
               options={SPECIES_OPTIONS}
               placeholder="Select species"
@@ -88,29 +78,21 @@ export function GeneralInformation({
             )}
           </div>
 
-          <div className="animal-form-field">
-            <Label.Root className="animal-form-label" htmlFor="breed">
-              Breed
-            </Label.Root>
-            <input
-              id="breed"
-              className={fieldClass('breed')}
-              type="text"
-              value={animal.breed}
-              onChange={handleChange('breed')}
-              placeholder="Breed"
-            />
-            {errorFor('breed') && (
-              <span className="animal-form-error">{errorFor('breed')}</span>
-            )}
-          </div>
+          <TextField
+            id="breed"
+            label="Breed"
+            value={medicalRecord.breed}
+            placeholder="Animal breed"
+            onChange={handleChange('breed')}
+            error={errorFor('breed')}
+          ></TextField>
 
           <div className="animal-form-field">
             <Label.Root className="animal-form-label" htmlFor="sex">
               Sex
             </Label.Root>
             <Select
-              value={animal.sex}
+              value={medicalRecord.sex}
               onValueChange={value => handleSelectChange('sex', value)}
               options={SEX_OPTIONS}
               placeholder="Select sex"
@@ -127,9 +109,9 @@ export function GeneralInformation({
             </Label.Root>
             <DateInput
               id="dateOfBirth"
-              value={animal.dateOfBirth}
+              value={medicalRecord.dateOfBirth}
               onChange={iso => {
-                updateAnimal({ dateOfBirth: iso });
+                updateMedicalRecord({ dateOfBirth: iso });
                 onClearError?.('dateOfBirth');
               }}
               hasError={!!errorFor('dateOfBirth')}
@@ -141,29 +123,16 @@ export function GeneralInformation({
             )}
           </div>
 
-          <div className="animal-form-field">
-            <Label.Root className="animal-form-label" htmlFor="microchipId">
-              Microchip ID
-            </Label.Root>
-            <input
-              id="microchipId"
-              className={fieldClass('microchipId')}
-              type="text"
-              value={animal.microchipId ?? ''}
-              onChange={e => {
-                updateAnimal({ microchipId: e.target.value || null });
-                onClearError?.('microchipId');
-              }}
-              placeholder="Optional"
-            />
-            {errorFor('microchipId') && (
-              <span className="animal-form-error">
-                {errorFor('microchipId')}
-              </span>
-            )}
-          </div>
+          <TextField
+            id="microchipId"
+            label="Microchip ID"
+            value={medicalRecord.microchipId}
+            placeholder="Optional"
+            onChange={handleChange('microchipId')}
+            error={errorFor('microchipId')}
+          ></TextField>
         </div>
-      </div>
+      </FormSection>
     </form>
   );
 }
