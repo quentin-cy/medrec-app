@@ -6,7 +6,8 @@ import { DeleteIcon } from '../components/common/icons/icons.tsx';
 import type { TypeOption, VetOption } from '../types/medicalContext.ts';
 
 export function SettingsPage() {
-  const { medicalRecord, medicalContext, updateMedicalContext } = useContext(MedRecContext);
+  const { medicalRecord, medicalContext, updateMedicalContext } =
+    useContext(MedRecContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,7 +48,7 @@ export function SettingsPage() {
 
   const usedVaccinationTypes = useMemo(() => {
     if (!medicalRecord) return new Set<number>();
-    return new Set(medicalRecord.vaccination_history.map(e => e.type));
+    return new Set(medicalRecord.vaccination_history.flatMap(e => e.types));
   }, [medicalRecord]);
 
   const vacTypes = medicalContext.vaccination_types;

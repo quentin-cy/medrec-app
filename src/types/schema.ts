@@ -31,7 +31,9 @@ export type PestControl = z.infer<typeof PestControlSchema>;
 export const VaccinationSchema = z.object({
   id: z.uuid(),
   date: z.iso.date().min(1, 'Date is required'),
-  type: z.number().int().nonnegative('Invalid vaccination type'),
+  types: z
+    .array(z.number().int().nonnegative('Invalid vaccination type'))
+    .min(1, 'At least one vaccination type is required'),
   reference: z.string().min(1, 'Reference is required'),
   vet: z.number().int().nonnegative('Invalid vet'),
 });

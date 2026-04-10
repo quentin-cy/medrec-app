@@ -1,6 +1,7 @@
 import { useState, useMemo, useContext } from 'react';
 import { MedRecContext } from '../../../context/MedRecContext.tsx';
 import { Select } from '../../common/Select/Select.tsx';
+import { MultiSelect } from '../../common/MultiSelect/MultiSelect.tsx';
 import { DateInput } from '../../common/DateInput/DateInput.tsx';
 import { generateId } from '../../../utils/utils.ts';
 import type { Vaccination as VaccinationEntry } from '../../../types/schema.ts';
@@ -11,17 +12,15 @@ import { SmallIconButton } from '../../common/IconButton/IconButton.tsx';
 import { FormSection } from '../../FormSection/FormSection.tsx';
 import { TextField } from '../../common/TextField/TextField.tsx';
 
-
 export function Vaccination() {
-  const { medicalRecord, updateMedicalRecord, medicalContext } = useContext(MedRecContext);
+  const { medicalRecord, updateMedicalRecord, medicalContext } =
+    useContext(MedRecContext);
   const [showForm, setShowForm] = useState(false);
   const [dateInput, setDateInput] = useState('');
-  const [typeInput, setTypeInput] = useState('');
+  const [typesInput, setTypesInput] = useState<string[]>([]);
   const [referenceInput, setReferenceInput] = useState('');
   const [vetInput, setVetInput] = useState('');
   const [formError, setFormError] = useState('');
-
-
 
   const typeOptions = useMemo(
     () =>
@@ -70,8 +69,8 @@ export function Vaccination() {
       return;
     }
 
-    if (typeInput === '') {
-      setFormError('Select a vaccination type');
+    if (typesInput.length === 0) {
+      setFormError('Select at least one vaccination type');
       return;
     }
 
@@ -88,7 +87,7 @@ export function Vaccination() {
     const entry: VaccinationEntry = {
       id: generateId(),
       date: dateInput,
-      type: Number(typeInput),
+      types: typesInput.map(Number),
       reference: referenceInput.trim(),
       vet: Number(vetInput),
     };
@@ -98,7 +97,7 @@ export function Vaccination() {
     });
 
     setDateInput('');
-    setTypeInput('');
+    setTypesInput([]);
     setReferenceInput('');
     setVetInput('');
     setFormError('');
@@ -107,7 +106,9 @@ export function Vaccination() {
 
   const handleDelete = (id: string) => {
     updateMedicalRecord({
-      vaccination_history: medicalRecord.vaccination_history.filter(e => e.id !== id),
+      vaccination_history: medicalRecord.vaccination_history.filter(
+        e => e.id !== id,
+      ),
     });
   };
 
@@ -115,10 +116,14 @@ export function Vaccination() {
     <FormSection
       title="Vaccination"
       button={
-        <SmallIconButton icon={<PlusIcon/>} text="Add Entry"  callback={() => {
+        <SmallIconButton
+          icon={<PlusIcon />}
+          text="Add Entry"
+          callback={() => {
             setShowForm(!showForm);
             setFormError('');
-          }}/>
+          }}
+        />
       }
     >
       {showForm && (
@@ -131,14 +136,14 @@ export function Vaccination() {
             }}
           />
           <div className="vaccination-form-select">
-            <Select
-              value={typeInput}
-              onValueChange={value => {
-                setTypeInput(value);
+            <MultiSelect
+              values={typesInput}
+              onValuesChange={values => {
+                setTypesInput(values);
                 setFormError('');
               }}
               options={typeOptions}
-              placeholder="Type"
+              placeholder="Type(s)"
             />
           </div>
           <TextField
@@ -190,7 +195,7 @@ export function Vaccination() {
             {entries.map(entry => (
               <tr key={entry.id}>
                 <td>{isoToEuropean(entry.date)}</td>
-                <td>{typeLabels[entry.type] ?? entry.type}</td>
+                <td>{entry.types.map(t => typeLabels[t] ?? t).join(', ')}</td>
                 <td>{entry.reference}</td>
                 <td>{vetLabels[entry.vet] ?? entry.vet}</td>
                 <td>
