@@ -10,27 +10,22 @@ import {
 export const SexEnum = z.enum(['male', 'female', 'unknown']);
 export type Sex = z.infer<typeof SexEnum>;
 
-export const WeighingSchema = z.object({
+export const EventTypeEnum = z.enum([
+  'vaccination',
+  'pest_control',
+  'weighing',
+  'appointment',
+]);
+export type EventType = z.infer<typeof EventTypeEnum>;
+
+const BaseEventFields = {
   id: z.uuid(),
   date: z.iso.date().min(1, 'Date is required'),
-  weight_kg: z.number().positive('Weight must be positive'),
-});
+};
 
-export type Weighing = z.infer<typeof WeighingSchema>;
-
-export const PestControlSchema = z.object({
-  id: z.uuid(),
-  date: z.iso.date().min(1, 'Date is required'),
-  type: z.number().int().nonnegative('Invalid pest control type'),
-  reference: z.string().min(1, 'Reference is required'),
-  comment: z.string().default(''),
-});
-
-export type PestControl = z.infer<typeof PestControlSchema>;
-
-export const VaccinationSchema = z.object({
-  id: z.uuid(),
-  date: z.iso.date().min(1, 'Date is required'),
+export const VaccinationEventSchema = z.object({
+  ...BaseEventFields,
+  eventType: z.literal('vaccination'),
   types: z
     .array(z.number().int().nonnegative('Invalid vaccination type'))
     .min(1, 'At least one vaccination type is required'),
@@ -38,7 +33,44 @@ export const VaccinationSchema = z.object({
   vet: z.number().int().nonnegative('Invalid vet'),
 });
 
-export type Vaccination = z.infer<typeof VaccinationSchema>;
+export type VaccinationEvent = z.infer<typeof VaccinationEventSchema>;
+
+export const PestControlEventSchema = z.object({
+  ...BaseEventFields,
+  eventType: z.literal('pest_control'),
+  type: z.number().int().nonnegative('Invalid pest control type'),
+  reference: z.string().min(1, 'Reference is required'),
+  comment: z.string().default(''),
+});
+
+export type PestControlEvent = z.infer<typeof PestControlEventSchema>;
+
+export const WeighingEventSchema = z.object({
+  ...BaseEventFields,
+  eventType: z.literal('weighing'),
+  weight_kg: z.number().positive('Weight must be positive'),
+});
+
+export type WeighingEvent = z.infer<typeof WeighingEventSchema>;
+
+export const AppointmentEventSchema = z.object({
+  ...BaseEventFields,
+  eventType: z.literal('appointment'),
+  vet: z.number().int().nonnegative('Invalid vet'),
+  comment: z.string().default(''),
+  price: z.number().nonnegative('Price must be non-negative').default(0),
+});
+
+export type AppointmentEvent = z.infer<typeof AppointmentEventSchema>;
+
+export const EventSchema = z.discriminatedUnion('eventType', [
+  VaccinationEventSchema,
+  PestControlEventSchema,
+  WeighingEventSchema,
+  AppointmentEventSchema,
+]);
+
+export type Event = z.infer<typeof EventSchema>;
 
 export const AnimalRecordSchema = z.object({
   id: z.uuid(),
@@ -47,9 +79,7 @@ export const AnimalRecordSchema = z.object({
   breed: z.string().default(''),
   dateOfBirth: z.string().default(''),
   sex: SexEnum.default('unknown'),
-  weight_history: z.array(WeighingSchema).default([]),
-  pest_control_history: z.array(PestControlSchema).default([]),
-  vaccination_history: z.array(VaccinationSchema).default([]),
+  events: z.array(EventSchema).default([]),
   microchipId: z.string().nullable().default(null),
 });
 

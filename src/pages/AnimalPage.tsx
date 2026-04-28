@@ -3,6 +3,7 @@ import { GeneralInformation } from '../components/FormBlocks/GeneralInformation/
 import { WeightHistory } from '../components/FormBlocks/WeightHistory/WeightHistory';
 import { PestControl } from '../components/FormBlocks/PestControl/PestControl';
 import { Vaccination } from '../components/FormBlocks/Vaccination/Vaccination';
+import { Appointment } from '../components/FormBlocks/Appointment/Appointment';
 import { AnimalRecordSchema } from '../types/schema';
 import { useEffect, useState, useCallback, useContext } from 'react';
 import './AnimalPage.css';
@@ -22,9 +23,8 @@ export function AnimalPage() {
   const { exportFile, canExport } = useFileExport();
 
   const handleExport = () => {
-
     try {
-      if (validate()){
+      if (validate()) {
         exportFile();
         toast.success('Exported', 'Medical record downloaded successfully');
       }
@@ -39,7 +39,7 @@ export function AnimalPage() {
     }
   }, [medicalRecord, navigate]);
 
-  const validate = useCallback(():boolean => {
+  const validate = useCallback((): boolean => {
     if (!medicalRecord) return false;
 
     const result = AnimalRecordSchema.safeParse(medicalRecord);
@@ -71,14 +71,22 @@ export function AnimalPage() {
     <div className="animal-page">
       <div className="animal-page-header">
         <div className="animal-page-header-left">
-          <h1 className="animal-page-title">{medicalRecord.name || 'New Animal'}</h1>
+          <h1 className="animal-page-title">
+            {medicalRecord.name || 'New Animal'}
+          </h1>
           {medicalRecord.species && (
             <span className="animal-page-badge">{medicalRecord.species}</span>
           )}
         </div>
         <div className="animal-page-header-right">
           <div className="animal-page-actions">
-            {canExport && (<IconButton icon={<SaveIcon/>} text="Export Record" callback={handleExport}/>)}
+            {canExport && (
+              <IconButton
+                icon={<SaveIcon />}
+                text="Export Record"
+                callback={handleExport}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -95,6 +103,7 @@ export function AnimalPage() {
       <WeightHistory />
       <PestControl />
       <Vaccination />
+      <Appointment />
     </div>
   );
 }
