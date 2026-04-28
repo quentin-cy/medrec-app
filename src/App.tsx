@@ -8,7 +8,7 @@ import { MedRecContextProvider } from './context/MedRecContextProvider.tsx';
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/medrec-app">
       <MedRecContextProvider>
         <ToastProvider>
           <Navigation>
