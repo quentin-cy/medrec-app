@@ -1,0 +1,145 @@
+/* Event Timeline — unified chronological event list */
+
+.event-timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* Event card */
+.event-card {
+  position: relative;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  transition: box-shadow var(--transition-fast);
+}
+
+.event-card:hover {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.event-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.event-card-date {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.event-card-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  line-height: 1.4;
+}
+
+.event-card-badge--vaccination {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.event-card-badge--pest_control {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.event-card-badge--weighing {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+.event-card-badge--appointment {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.event-card-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-lg);
+  font-size: var(--font-size-md);
+}
+
+.event-card-field {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.event-card-field-label {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.event-card-field-value {
+  font-size: var(--font-size-sm);
+}
+
+.event-card-delete {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity var(--transition-fast),
+    color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.event-card:hover .event-card-delete {
+  opacity: 1;
+}
+
+.event-card-delete:hover {
+  color: var(--color-danger);
+  background: var(--color-surface-hover);
+}
+
+/* Type picker grid inside modal */
+.event-type-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.event-type-picker-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-lg) var(--space-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  color: var(--color-text);
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.event-type-picker-btn:hover {
+  border-color: var(--color-primary);
+  background: var(--color-surface-hover);
+}
