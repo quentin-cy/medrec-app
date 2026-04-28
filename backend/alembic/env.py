@@ -4,6 +4,8 @@ from sqlalchemy import engine_from_config, pool
 from alembic import context
 
 from app.models.animal import Base
+from app.models import event as _event_models  # noqa: F401
+from app.models import context as _context_models  # noqa: F401
 
 config = context.config
 

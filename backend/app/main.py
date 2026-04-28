@@ -4,7 +4,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import get_engine
 from app.models.animal import Base
-from app.routers import animals
+from app.models import event as _event_models  # noqa: F401 — register Event table
+from app.models import context as _context_models  # noqa: F401 — register context tables
+from app.routers import animals, events, context
 
 
 @asynccontextmanager
@@ -32,6 +34,8 @@ app.add_middleware(
 )
 
 app.include_router(animals.router)
+app.include_router(events.router)
+app.include_router(context.router)
 
 
 @app.get("/api/health")
