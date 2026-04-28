@@ -37,3 +37,12 @@ stats.html
 # React Native leftovers
 .bundle/
 .watchmanconfig
+
+# Backend (Python)
+backend/.venv/
+backend/__pycache__/
+backend/*.pyc
+backend/.env
+backend/medrec.db
+backend/*.egg-info/
+backend/.pytest_cache/
