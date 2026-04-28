@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import { ToastProvider } from './components/common/Toast/Toast';
 import { Navigation } from './components/Navigation/Navigation.tsx';
 import { HomePage } from './pages/HomePage';
@@ -8,7 +8,7 @@ import { MedRecContextProvider } from './context/MedRecContextProvider.tsx';
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <MedRecContextProvider>
         <ToastProvider>
           <Navigation>
@@ -20,7 +20,7 @@ function App() {
           </Navigation>
         </ToastProvider>
       </MedRecContextProvider>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
