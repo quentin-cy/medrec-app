@@ -4,13 +4,14 @@ import { Select } from '../../common/Select/Select.tsx';
 import { MultiSelect } from '../../common/MultiSelect/MultiSelect.tsx';
 import { DateInput } from '../../common/DateInput/DateInput.tsx';
 import { generateId } from '../../../utils/utils.ts';
-import type { Vaccination as VaccinationEntry } from '../../../types/schema.ts';
-import './Vaccination.css';
+import type { VaccinationEvent } from '../../../types/schema.ts';
+import '../event-form.css';
 import { DeleteIcon, PlusIcon } from '../../common/icons/icons.tsx';
 import { isoToEuropean } from '../../../utils/formatting.ts';
 import { SmallIconButton } from '../../common/IconButton/IconButton.tsx';
 import { FormSection } from '../../FormSection/FormSection.tsx';
 import { TextField } from '../../common/TextField/TextField.tsx';
+import { Modal } from '../../common/Modal/Modal.tsx';
 
 export function Vaccination() {
   const { medicalRecord, updateMedicalRecord, medicalContext } =
@@ -58,10 +59,20 @@ export function Vaccination() {
       ) as Record<number, string>,
     [medicalContext.vets],
   );
+
   if (!medicalRecord) return null;
-  const entries = [...medicalRecord.vaccination_history].sort((a, b) =>
-    b.date.localeCompare(a.date),
-  );
+
+  const entries = medicalRecord.events
+    .filter((e): e is VaccinationEvent => e.eventType === 'vaccination')
+    .sort((a, b) => b.date.localeCompare(a.date));
+
+  const resetForm = () => {
+    setDateInput('');
+    setTypesInput([]);
+    setReferenceInput('');
+    setVetInput('');
+    setFormError('');
+  };
 
   const handleAdd = () => {
     if (!dateInput) {
@@ -84,31 +95,26 @@ export function Vaccination() {
       return;
     }
 
-    const entry: VaccinationEntry = {
+    const entry: VaccinationEvent = {
       id: generateId(),
       date: dateInput,
+      eventType: 'vaccination',
       types: typesInput.map(Number),
       reference: referenceInput.trim(),
       vet: Number(vetInput),
     };
 
     updateMedicalRecord({
-      vaccination_history: [...medicalRecord.vaccination_history, entry],
+      events: [...medicalRecord.events, entry],
     });
 
-    setDateInput('');
-    setTypesInput([]);
-    setReferenceInput('');
-    setVetInput('');
-    setFormError('');
+    resetForm();
     setShowForm(false);
   };
 
   const handleDelete = (id: string) => {
     updateMedicalRecord({
-      vaccination_history: medicalRecord.vaccination_history.filter(
-        e => e.id !== id,
-      ),
+      events: medicalRecord.events.filter(e => e.id !== id),
     });
   };
 
@@ -120,14 +126,21 @@ export function Vaccination() {
           icon={<PlusIcon />}
           text="Add Entry"
           callback={() => {
-            setShowForm(!showForm);
-            setFormError('');
+            resetForm();
+            setShowForm(true);
           }}
         />
       }
     >
-      {showForm && (
-        <div className="vaccination-form">
+      <Modal
+        open={showForm}
+        onOpenChange={open => {
+          setShowForm(open);
+          if (!open) resetForm();
+        }}
+        title="Add Vaccination"
+      >
+        <div className="event-form">
           <DateInput
             value={dateInput}
             onChange={iso => {
@@ -135,17 +148,15 @@ export function Vaccination() {
               setFormError('');
             }}
           />
-          <div className="vaccination-form-select">
-            <MultiSelect
-              values={typesInput}
-              onValuesChange={values => {
-                setTypesInput(values);
-                setFormError('');
-              }}
-              options={typeOptions}
-              placeholder="Type(s)"
-            />
-          </div>
+          <MultiSelect
+            values={typesInput}
+            onValuesChange={values => {
+              setTypesInput(values);
+              setFormError('');
+            }}
+            options={typeOptions}
+            placeholder="Type(s)"
+          />
           <TextField
             id="reference"
             value={referenceInput}
@@ -154,34 +165,29 @@ export function Vaccination() {
               setReferenceInput(e.target.value);
               setFormError('');
             }}
-          ></TextField>
-
-          <div className="vaccination-form-select">
-            <Select
-              value={vetInput}
-              onValueChange={value => {
-                setVetInput(value);
-                setFormError('');
-              }}
-              options={vetOptions}
-              placeholder="Vet"
-            />
-          </div>
-          <button className="vaccination-form-confirm" onClick={handleAdd}>
+          />
+          <Select
+            value={vetInput}
+            onValueChange={value => {
+              setVetInput(value);
+              setFormError('');
+            }}
+            options={vetOptions}
+            placeholder="Vet"
+          />
+          <button className="event-form-confirm" onClick={handleAdd}>
             Add
           </button>
-          {formError && (
-            <span className="vaccination-form-error">{formError}</span>
-          )}
+          {formError && <span className="event-form-error">{formError}</span>}
         </div>
-      )}
+      </Modal>
 
       {entries.length === 0 ? (
-        <p className="vaccination-empty">
+        <p className="event-empty">
           No vaccination entries yet. Add one to start tracking.
         </p>
       ) : (
-        <table className="vaccination-table">
+        <table className="event-table">
           <thead>
             <tr>
               <th>Date</th>
@@ -200,7 +206,7 @@ export function Vaccination() {
                 <td>{vetLabels[entry.vet] ?? entry.vet}</td>
                 <td>
                   <button
-                    className="vaccination-delete-btn"
+                    className="event-delete-btn"
                     onClick={() => handleDelete(entry.id)}
                     title="Delete entry"
                   >

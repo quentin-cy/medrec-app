@@ -1,55 +1,58 @@
 import { useState, useMemo, useContext } from 'react';
+import { MedRecContext } from '../../../context/MedRecContext.tsx';
 import { Select } from '../../common/Select/Select.tsx';
 import { DateInput } from '../../common/DateInput/DateInput.tsx';
 import { generateId } from '../../../utils/utils.ts';
-import type { PestControlEvent } from '../../../types/schema.ts';
+import type { AppointmentEvent } from '../../../types/schema.ts';
 import '../event-form.css';
 import { DeleteIcon, PlusIcon } from '../../common/icons/icons.tsx';
 import { isoToEuropean } from '../../../utils/formatting.ts';
-import { MedRecContext } from '../../../context/MedRecContext.tsx';
 import { SmallIconButton } from '../../common/IconButton/IconButton.tsx';
 import { FormSection } from '../../FormSection/FormSection.tsx';
 import { TextField } from '../../common/TextField/TextField.tsx';
 import { Modal } from '../../common/Modal/Modal.tsx';
 
-export function PestControl() {
+export function Appointment() {
   const { medicalRecord, updateMedicalRecord, medicalContext } =
     useContext(MedRecContext);
   const [showForm, setShowForm] = useState(false);
   const [dateInput, setDateInput] = useState('');
-  const [typeInput, setTypeInput] = useState('');
-  const [referenceInput, setReferenceInput] = useState('');
+  const [vetInput, setVetInput] = useState('');
   const [commentInput, setCommentInput] = useState('');
+  const [priceInput, setPriceInput] = useState('');
   const [formError, setFormError] = useState('');
 
-  const typeOptions = useMemo(
+  const formatVetDisplay = (v: { name: string; practice: string }) =>
+    v.practice ? `${v.name} (${v.practice})` : v.name;
+
+  const vetOptions = useMemo(
     () =>
-      medicalContext.pest_control_types.map(t => ({
-        value: String(t.value),
-        label: t.label,
+      medicalContext.vets.map(v => ({
+        value: String(v.value),
+        label: formatVetDisplay(v),
       })),
-    [medicalContext.pest_control_types],
+    [medicalContext.vets],
   );
 
-  const typeLabels = useMemo(
+  const vetLabels = useMemo(
     () =>
       Object.fromEntries(
-        medicalContext.pest_control_types.map(t => [t.value, t.label]),
+        medicalContext.vets.map(v => [v.value, formatVetDisplay(v)]),
       ) as Record<number, string>,
-    [medicalContext.pest_control_types],
+    [medicalContext.vets],
   );
 
   if (!medicalRecord) return null;
 
   const entries = medicalRecord.events
-    .filter((e): e is PestControlEvent => e.eventType === 'pest_control')
+    .filter((e): e is AppointmentEvent => e.eventType === 'appointment')
     .sort((a, b) => b.date.localeCompare(a.date));
 
   const resetForm = () => {
     setDateInput('');
-    setTypeInput('');
-    setReferenceInput('');
+    setVetInput('');
     setCommentInput('');
+    setPriceInput('');
     setFormError('');
   };
 
@@ -59,23 +62,24 @@ export function PestControl() {
       return;
     }
 
-    if (typeInput === '') {
-      setFormError('Select a type');
+    if (vetInput === '') {
+      setFormError('Select a vet');
       return;
     }
 
-    if (!referenceInput.trim()) {
-      setFormError('Enter a reference (product name)');
+    const price = priceInput ? parseFloat(priceInput) : 0;
+    if (isNaN(price) || price < 0) {
+      setFormError('Enter a valid price');
       return;
     }
 
-    const entry: PestControlEvent = {
+    const entry: AppointmentEvent = {
       id: generateId(),
       date: dateInput,
-      eventType: 'pest_control',
-      type: Number(typeInput) as 0 | 1,
-      reference: referenceInput.trim(),
+      eventType: 'appointment',
+      vet: Number(vetInput),
       comment: commentInput.trim(),
+      price,
     };
 
     updateMedicalRecord({
@@ -94,7 +98,7 @@ export function PestControl() {
 
   return (
     <FormSection
-      title="Pest control"
+      title="Appointments"
       button={
         <SmallIconButton
           icon={<PlusIcon />}
@@ -112,7 +116,7 @@ export function PestControl() {
           setShowForm(open);
           if (!open) resetForm();
         }}
-        title="Add Pest Control"
+        title="Add Appointment"
       >
         <div className="event-form">
           <DateInput
@@ -123,28 +127,34 @@ export function PestControl() {
             }}
           />
           <Select
-            value={typeInput}
+            value={vetInput}
             onValueChange={value => {
-              setTypeInput(value);
+              setVetInput(value);
               setFormError('');
             }}
-            options={typeOptions}
-            placeholder="Type"
-          />
-          <TextField
-            id="reference"
-            value={referenceInput}
-            placeholder="Product reference"
-            onChange={e => {
-              setReferenceInput(e.target.value);
-              setFormError('');
-            }}
+            options={vetOptions}
+            placeholder="Vet"
           />
           <TextField
             id="comment"
             value={commentInput}
             placeholder="Comment (optional)"
-            onChange={e => setCommentInput(e.target.value)}
+            onChange={e => {
+              setCommentInput(e.target.value);
+              setFormError('');
+            }}
+          />
+          <input
+            className="event-form-input event-form-input-short"
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="Price"
+            value={priceInput}
+            onChange={e => {
+              setPriceInput(e.target.value);
+              setFormError('');
+            }}
           />
           <button className="event-form-confirm" onClick={handleAdd}>
             Add
@@ -155,16 +165,16 @@ export function PestControl() {
 
       {entries.length === 0 ? (
         <p className="event-empty">
-          No pest control entries yet. Add one to start tracking.
+          No appointment entries yet. Add one to start tracking.
         </p>
       ) : (
         <table className="event-table">
           <thead>
             <tr>
               <th>Date</th>
-              <th>Type</th>
-              <th>Reference</th>
+              <th>Vet</th>
               <th>Comment</th>
+              <th>Price</th>
               <th></th>
             </tr>
           </thead>
@@ -172,9 +182,9 @@ export function PestControl() {
             {entries.map(entry => (
               <tr key={entry.id}>
                 <td>{isoToEuropean(entry.date)}</td>
-                <td>{typeLabels[entry.type] ?? entry.type}</td>
-                <td>{entry.reference}</td>
+                <td>{vetLabels[entry.vet] ?? entry.vet}</td>
                 <td className="event-table-muted">{entry.comment || '--'}</td>
+                <td>{entry.price > 0 ? `${entry.price.toFixed(2)}` : '--'}</td>
                 <td>
                   <button
                     className="event-delete-btn"

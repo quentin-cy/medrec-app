@@ -1,13 +1,15 @@
 import { useContext, useState } from 'react';
 import { DateInput } from '../../common/DateInput/DateInput.tsx';
 import { generateId } from '../../../utils/utils.ts';
-import type { Weighing } from '../../../types/schema.ts';
+import type { WeighingEvent } from '../../../types/schema.ts';
 import './WeightHistory.css';
+import '../event-form.css';
 import { DeleteIcon, PlusIcon } from '../../common/icons/icons.tsx';
 import { isoToEuropean } from '../../../utils/formatting.ts';
 import { MedRecContext } from '../../../context/MedRecContext.tsx';
 import { FormSection } from '../../FormSection/FormSection.tsx';
 import { SmallIconButton } from '../../common/IconButton/IconButton.tsx';
+import { Modal } from '../../common/Modal/Modal.tsx';
 
 export function WeightHistory() {
   const { medicalRecord, updateMedicalRecord } = useContext(MedRecContext);
@@ -18,9 +20,15 @@ export function WeightHistory() {
 
   if (!medicalRecord) return null;
 
-  const entries = [...medicalRecord.weight_history].sort((a, b) =>
-    b.date.localeCompare(a.date),
-  );
+  const entries = medicalRecord.events
+    .filter((e): e is WeighingEvent => e.eventType === 'weighing')
+    .sort((a, b) => b.date.localeCompare(a.date));
+
+  const resetForm = () => {
+    setDateInput('');
+    setWeightInput('');
+    setFormError('');
+  };
 
   const handleAdd = () => {
     if (!dateInput) {
@@ -34,25 +42,24 @@ export function WeightHistory() {
       return;
     }
 
-    const entry: Weighing = {
+    const entry: WeighingEvent = {
       id: generateId(),
       date: dateInput,
+      eventType: 'weighing',
       weight_kg: weight,
     };
 
     updateMedicalRecord({
-      weight_history: [...medicalRecord.weight_history, entry],
+      events: [...medicalRecord.events, entry],
     });
 
-    setDateInput('');
-    setWeightInput('');
-    setFormError('');
+    resetForm();
     setShowForm(false);
   };
 
   const handleDelete = (id: string) => {
     updateMedicalRecord({
-      weight_history: medicalRecord.weight_history.filter(w => w.id !== id),
+      events: medicalRecord.events.filter(e => e.id !== id),
     });
   };
 
@@ -64,14 +71,21 @@ export function WeightHistory() {
           icon={<PlusIcon />}
           text="Add Entry"
           callback={() => {
-            setShowForm(!showForm);
-            setFormError('');
+            resetForm();
+            setShowForm(true);
           }}
         />
       }
     >
-      {showForm && (
-        <div className="weight-history-form">
+      <Modal
+        open={showForm}
+        onOpenChange={open => {
+          setShowForm(open);
+          if (!open) resetForm();
+        }}
+        title="Add Weight Entry"
+      >
+        <div className="event-form">
           <DateInput
             value={dateInput}
             onChange={iso => {
@@ -80,34 +94,32 @@ export function WeightHistory() {
             }}
           />
           <input
-            className="weight-history-form-input weight-history-form-input-weight"
+            className="event-form-input"
             type="number"
             step="0.1"
             min="0"
-            placeholder="kg"
+            placeholder="Weight (kg)"
             value={weightInput}
             onChange={e => {
               setWeightInput(e.target.value);
               setFormError('');
             }}
           />
-          <button className="weight-history-form-confirm" onClick={handleAdd}>
+          <button className="event-form-confirm" onClick={handleAdd}>
             Add
           </button>
-          {formError && (
-            <span className="weight-history-form-error">{formError}</span>
-          )}
+          {formError && <span className="event-form-error">{formError}</span>}
         </div>
-      )}
+      </Modal>
 
       {entries.length === 0 ? (
-        <p className="weight-history-empty">
+        <p className="event-empty">
           No weight entries yet. Add one to start tracking.
         </p>
       ) : (
         <>
           {entries.length >= 2 && <WeightChart entries={entries} />}
-          <table className="weight-history-table">
+          <table className="event-table">
             <thead>
               <tr>
                 <th>Date</th>
@@ -122,7 +134,7 @@ export function WeightHistory() {
                   <td>{entry.weight_kg}</td>
                   <td>
                     <button
-                      className="weight-history-delete-btn"
+                      className="event-delete-btn"
                       onClick={() => handleDelete(entry.id)}
                       title="Delete entry"
                     >
@@ -154,7 +166,7 @@ const MONTH_LABELS = [
   'Dec',
 ];
 
-function WeightChart({ entries }: { entries: Weighing[] }) {
+function WeightChart({ entries }: { entries: WeighingEvent[] }) {
   // Sort chronologically for the chart (oldest first)
   const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date));
 

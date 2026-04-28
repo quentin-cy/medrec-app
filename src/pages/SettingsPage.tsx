@@ -4,6 +4,11 @@ import { MedRecContext } from '../context/MedRecContext';
 import './SettingsPage.css';
 import { DeleteIcon } from '../components/common/icons/icons.tsx';
 import type { TypeOption, VetOption } from '../types/medicalContext.ts';
+import type {
+  VaccinationEvent,
+  PestControlEvent,
+  AppointmentEvent,
+} from '../types/schema.ts';
 
 export function SettingsPage() {
   const { medicalRecord, medicalContext, updateMedicalContext } =
@@ -20,7 +25,11 @@ export function SettingsPage() {
 
   const usedPestControlTypes = useMemo(() => {
     if (!medicalRecord) return new Set<number>();
-    return new Set(medicalRecord.pest_control_history.map(e => e.type));
+    return new Set(
+      medicalRecord.events
+        .filter((e): e is PestControlEvent => e.eventType === 'pest_control')
+        .map(e => e.type),
+    );
   }, [medicalRecord]);
 
   const pestTypes = medicalContext.pest_control_types;
@@ -48,7 +57,11 @@ export function SettingsPage() {
 
   const usedVaccinationTypes = useMemo(() => {
     if (!medicalRecord) return new Set<number>();
-    return new Set(medicalRecord.vaccination_history.flatMap(e => e.types));
+    return new Set(
+      medicalRecord.events
+        .filter((e): e is VaccinationEvent => e.eventType === 'vaccination')
+        .flatMap(e => e.types),
+    );
   }, [medicalRecord]);
 
   const vacTypes = medicalContext.vaccination_types;
@@ -74,7 +87,14 @@ export function SettingsPage() {
 
   const usedVets = useMemo(() => {
     if (!medicalRecord) return new Set<number>();
-    return new Set(medicalRecord.vaccination_history.map(e => e.vet));
+    return new Set(
+      medicalRecord.events
+        .filter(
+          (e): e is VaccinationEvent | AppointmentEvent =>
+            e.eventType === 'vaccination' || e.eventType === 'appointment',
+        )
+        .map(e => e.vet),
+    );
   }, [medicalRecord]);
 
   const vets = medicalContext.vets;
