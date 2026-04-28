@@ -1,9 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { GeneralInformation } from '../components/FormBlocks/GeneralInformation/GeneralInformation.tsx';
-import { WeightHistory } from '../components/FormBlocks/WeightHistory/WeightHistory';
-import { PestControl } from '../components/FormBlocks/PestControl/PestControl';
-import { Vaccination } from '../components/FormBlocks/Vaccination/Vaccination';
-import { Appointment } from '../components/FormBlocks/Appointment/Appointment';
+import { EventTimeline } from '../components/EventTimeline/EventTimeline.tsx';
 import { AnimalRecordSchema } from '../types/schema';
 import { useEffect, useState, useCallback, useContext } from 'react';
 import './AnimalPage.css';
@@ -100,10 +97,7 @@ export function AnimalPage() {
           })
         }
       />
-      <WeightHistory />
-      <PestControl />
-      <Vaccination />
-      <Appointment />
+      <EventTimeline />
     </div>
   );
 }
